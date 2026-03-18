@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id         String @id
+  role       Role   @default(Aluno)
+  Status     Status @default(Ativo)
+  plano      Plano  @default(Mensal)
+  academiaId String
+
+  academia Academia @relation(fields: [academiaId], references: [id])
+}
+
+model Academia {
+  id          String       @id @default(uuid())
+  nome        String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  usuarios    User[]
+  financeiros Financeiro[]
+}
+
+model Financeiro {
+  id             String    @id @default(uuid())
+  type           Type
+  categoria      Categoria
+  descricao      String
+  valor          Decimal
+  data_pagamento DateTime  @default(now())
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  academiaId     String
+
+  academia Academia @relation(fields: [academiaId], references: [id])
+}
+
+model Medidas {
+  id                   String   @id @default(uuid())
+  userId               String
+  idade                Int
+  peso                 Float
+  alturaCentimetros    Float
+  ombro                Float?
+  torax                Float?
+  cintura              Float?
+  abdomen              Float?
+  quadril              Float?
+  braco_relax_direi    Float?
+  braco_contrai_direi  Float?
+  braco_relax_esq      Float?
+  barco_contrai_esq    Float?
+  antebraco_dir        Float?
+  antebraco_esq        Float?
+  coxa_dir             Float?
+  coxa_esq             Float?
+  dobra_triceps        Float?
+  dobra_supraescapular Float?
+  dobra_suprailica     Float?
+  dobra_adbdominal     Float?
+  dobra_coxa           Float?
+  dobra_peitoral       Float?
+  imc                  Float?
+  percentual_gordura   Float?
+  massa_magra          Float?
+  massa_gorda          Float?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+enum Type {
+  Entrada
+  Saida
+}
+
+enum Categoria {
+  Mensalidade
+  Aluguel
+  Equipamentos
+  Energia
+  Agua
+  Manutencao
+  Outros
+}
+
+enum Role {
+  Dono
+  Aluno
+}
+
+enum Status {
+  Ativo
+  Inativo
+}
+
+enum Plano {
+  Mensal
+  Trimestral
+  Semestral
+  Anual
+}
