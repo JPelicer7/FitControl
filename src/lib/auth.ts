@@ -9,6 +9,8 @@ const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
 });
 
+// ... seus imports
+
 export const auth = betterAuth({
   trustedOrigins: ["http://localhost:3000"],
   emailAndPassword: {
@@ -17,5 +19,14 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+  // ADICIONE ISSO AQUI ABAIXO:
+  user: {
+    additionalFields: {
+      role: { type: "string" },
+      Status: { type: "string" },
+      plano: { type: "string" },
+      academiaId: { type: "string" },
+    },
+  },
   plugins: [openAPI()],
 });

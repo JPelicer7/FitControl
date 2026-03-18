@@ -2,7 +2,8 @@ import "dotenv/config";
 
 import fastifyCors from "@fastify/cors";
 import fastifySwagger from "@fastify/swagger";
-import fastifySwaggerUI from "@fastify/swagger-ui";
+//import fastifySwaggerUI from "@fastify/swagger-ui";
+import fastifyApiReference from "@scalar/fastify-api-reference";
 // Import the framework and instantiate it
 import Fastify from "fastify";
 import {
@@ -21,11 +22,6 @@ const app = Fastify({
 
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
-
-// Declare a route
-app.get("/", async function handler() {
-  return { hello: "world" };
-});
 
 app.withTypeProvider<ZodTypeProvider>().route({
   method: "GET",
@@ -66,9 +62,38 @@ await app.register(fastifyCors, {
   credentials: true,
 });
 
-app.register(fastifySwaggerUI, {
+await app.register(fastifyApiReference, {
   routePrefix: "/docs",
+  configuration: {
+    sources: [
+      {
+        title: "FitControl",
+        slug: "FitControl-api",
+        url: "/swagger.json",
+      },
+      {
+        title: "Auth API",
+        slug: "auth-api",
+        url: "/api/auth/open-api/generate-schema",
+      },
+    ],
+  },
 });
+
+app.withTypeProvider<ZodTypeProvider>().route({
+  method: "GET",
+  url: "/swagger.json",
+  schema: {
+    hide: true,
+  },
+  handler: async () => {
+    return app.swagger();
+  },
+});
+
+// app.register(fastifySwaggerUI, {
+//   routePrefix: "/docs",
+// });
 
 // Register authentication endpoint
 app.route({
