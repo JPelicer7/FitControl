@@ -15,6 +15,7 @@ import {
 import z from "zod";
 
 import { auth } from "./lib/auth.js";
+import { userRoutes } from "./routes/user.js";
 
 const app = Fastify({
   logger: true,
@@ -94,6 +95,9 @@ app.withTypeProvider<ZodTypeProvider>().route({
 // app.register(fastifySwaggerUI, {
 //   routePrefix: "/docs",
 // });
+
+//Rota create User
+await app.register(userRoutes, { prefix: "/user" });
 
 // Register authentication endpoint
 app.route({
