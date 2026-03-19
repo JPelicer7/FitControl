@@ -1,3 +1,4 @@
+import { NotFoundError } from "../errors/index.js";
 import { Plano } from "../generated/prisma/enums.js";
 import { Role } from "../generated/prisma/enums.js";
 import { Status } from "../generated/prisma/enums.js";
@@ -31,6 +32,9 @@ export class CreateUser {
         Status: dto.Status,
       },
     });
+
+    if (!newUser) throw new NotFoundError("Não foi possível criar o usuário.");
+
     return { id: newUser.user.id, email: newUser.user.email };
   }
 }

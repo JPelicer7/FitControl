@@ -11,7 +11,7 @@ export const CreateUserBodySchema = z.object({
   name: z.string(),
   email: z.string(),
   password: z.string(),
-  academiaId: z.string(),
+  //academiaId: z.string(),
   plano: z.enum(Plano),
   role: z.enum(Role),
   Status: z.enum(Status),
@@ -20,4 +20,18 @@ export const CreateUserBodySchema = z.object({
 export const CreateUserDataSchema = z.object({
   id: z.string(),
   email: z.string(),
+});
+
+export const UpdateUserBodySchema = z.object({
+  name: z.string().optional(),
+  plano: z.enum(Plano).optional(),
+  role: z.enum(Role).optional(),
+  Status: z.enum(Status).optional(),
+});
+
+export const UpdateUserDataSchema = z.object({
+  name: z.string(),
+  plano: z.enum(Plano),
+  role: z.enum(Role),
+  Status: z.enum(Status),
 });
