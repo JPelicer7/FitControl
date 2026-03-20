@@ -35,3 +35,12 @@ export const UpdateUserDataSchema = z.object({
   role: z.enum(Role),
   Status: z.enum(Status),
 });
+
+export const GetUsersDataSchema = z.array(
+  z.object({
+    name: z.string(),
+    Status: z.enum(Status),
+    plano: z.enum(Plano),
+    updatedAt: z.date(),
+  }),
+);

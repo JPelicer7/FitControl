@@ -19,6 +19,7 @@ model User {
   Status     Status @default(Ativo)
   plano      Plano  @default(Mensal)
   academiaId String
+  telefone String?
 
   academia      Academia  @relation(fields: [academiaId], references: [id])
   name          String
@@ -71,7 +72,7 @@ model Medidas {
   braco_relax_direi    Float?
   braco_contrai_direi  Float?
   braco_relax_esq      Float?
-  barco_contrai_esq    Float?
+  braco_contrai_esq    Float?
   antebraco_dir        Float?
   antebraco_esq        Float?
   coxa_dir             Float?

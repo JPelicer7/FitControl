@@ -10,10 +10,12 @@ import {
   CreateUserBodySchema,
   CreateUserDataSchema,
   ErrorSchema,
+  GetUsersDataSchema,
   UpdateUserBodySchema,
   UpdateUserDataSchema,
 } from "../schemas/index.js";
 import { CreateUser } from "../usecases/CreateUser.js";
+import { GetUsers } from "../usecases/GetUsers.js";
 import { UpdateUser } from "../usecases/UpdateUser.js";
 
 export const userRoutes = async (app: FastifyInstance) => {
@@ -133,6 +135,44 @@ export const userRoutes = async (app: FastifyInstance) => {
           error: "Internal server error",
           code: "INTERNAL_SERVER_ERROR",
         });
+      }
+    },
+  });
+
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "GET",
+    url: "/",
+    schema: {
+      operationId: "GetUsers",
+      tags: ["User"],
+      summary: "Get Users",
+      response: {
+        201: GetUsersDataSchema,
+        401: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      try {
+        const session = await auth.api.getSession({
+          headers: fromNodeHeaders(request.headers),
+        });
+
+        if (!session) {
+          return reply.status(401).send({
+            error: "Unauthorized",
+            code: "UNAUTHORIZED",
+          });
+        }
+
+        const getUsers = new GetUsers();
+        const result = await getUsers.execute({
+          academiaId: session.user.academiaId,
+        });
+        return reply.status(201).send(result);
+      } catch (error) {
+        app.log.error(error);
       }
     },
   });
