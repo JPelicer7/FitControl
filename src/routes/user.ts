@@ -10,11 +10,14 @@ import {
   CreateUserBodySchema,
   CreateUserDataSchema,
   ErrorSchema,
+  GetUserDataSchema,
+  GetUserParamsSchema,
   GetUsersDataSchema,
   UpdateUserBodySchema,
   UpdateUserDataSchema,
 } from "../schemas/index.js";
 import { CreateUser } from "../usecases/CreateUser.js";
+import { GetUser } from "../usecases/GetUser.js";
 import { GetUsers } from "../usecases/GetUsers.js";
 import { UpdateUser } from "../usecases/UpdateUser.js";
 
@@ -171,6 +174,58 @@ export const userRoutes = async (app: FastifyInstance) => {
           academiaId: session.user.academiaId,
         });
         return reply.status(201).send(result);
+      } catch (error) {
+        app.log.error(error);
+
+        if (error instanceof NotFoundError) {
+          return reply.status(404).send({
+            error: error.message,
+            code: "NOT_FOUND",
+          });
+        }
+
+        return reply.status(500).send({
+          error: "Internal server error",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  });
+
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "GET",
+    url: "/:userId",
+    schema: {
+      operationId: "GetUser",
+      tags: ["User"],
+      summary: "Get User by ID",
+      params: GetUserParamsSchema,
+      response: {
+        200: GetUserDataSchema,
+        401: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      try {
+        const session = await auth.api.getSession({
+          headers: fromNodeHeaders(request.headers),
+        });
+
+        if (!session) {
+          return reply.status(401).send({
+            error: "Unauthorized",
+            code: "UNAUTHORIZED",
+          });
+        }
+
+        const getUser = new GetUser();
+        const result = await getUser.execute({
+          userId: request.params.userId,
+          academiaId: session.user.academiaId,
+        });
+        return reply.status(200).send(result);
       } catch (error) {
         app.log.error(error);
 

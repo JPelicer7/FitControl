@@ -14,12 +14,13 @@ datasource db {
 }
 
 model User {
-  id         String @id
-  role       Role   @default(Aluno)
-  Status     Status @default(Ativo)
-  plano      Plano  @default(Mensal)
+  id         String    @id
+  role       Role      @default(Aluno)
+  Status     Status    @default(Ativo)
+  plano      Plano     @default(Mensal)
   academiaId String
-  telefone String?
+  telefone   String?
+  medidas    Medidas[]
 
   academia      Academia  @relation(fields: [academiaId], references: [id])
   name          String
@@ -89,6 +90,8 @@ model Medidas {
   massa_gorda          Float?
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 enum Type {

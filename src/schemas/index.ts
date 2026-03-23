@@ -45,6 +45,65 @@ export const GetUsersDataSchema = z.array(
   }),
 );
 
+export const GetUserParamsSchema = z.object({
+  userId: z.string(),
+});
+
+const medidaOptionalNumber = () => z.number().nullable();
+
+export const MedidaSchema = z.object({
+  id: z.string().uuid(),
+  userId: z.string(),
+  idade: z.number(),
+  peso: z.number(),
+  alturaCentimetros: z.number(),
+  ombro: medidaOptionalNumber(),
+  torax: medidaOptionalNumber(),
+  cintura: medidaOptionalNumber(),
+  abdomen: medidaOptionalNumber(),
+  quadril: medidaOptionalNumber(),
+  braco_relax_direi: medidaOptionalNumber(),
+  braco_contrai_direi: medidaOptionalNumber(),
+  braco_relax_esq: medidaOptionalNumber(),
+  braco_contrai_esq: medidaOptionalNumber(),
+  antebraco_dir: medidaOptionalNumber(),
+  antebraco_esq: medidaOptionalNumber(),
+  coxa_dir: medidaOptionalNumber(),
+  coxa_esq: medidaOptionalNumber(),
+  dobra_triceps: medidaOptionalNumber(),
+  dobra_supraescapular: medidaOptionalNumber(),
+  dobra_suprailica: medidaOptionalNumber(),
+  dobra_adbdominal: medidaOptionalNumber(),
+  dobra_coxa: medidaOptionalNumber(),
+  dobra_peitoral: medidaOptionalNumber(),
+  imc: medidaOptionalNumber(),
+  percentual_gordura: medidaOptionalNumber(),
+  massa_magra: medidaOptionalNumber(),
+  massa_gorda: medidaOptionalNumber(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+});
+
+export const ComparacaoCampoSchema = z.object({
+  atual: z.number(),
+  anterior: z.number(),
+  diferenca: z.number(),
+});
+
+export const GetUserDataSchema = z.object({
+  user: z.object({
+    name: z.string(),
+    plano: z.enum(Plano),
+    status: z.enum(Status),
+  }),
+  medidas: z.object({
+    todas: z.array(MedidaSchema),
+    comparacao: z
+      .record(z.string(), ComparacaoCampoSchema)
+      .nullable(),
+  }),
+});
+
 export const CreateMedidasBodySchema = z.object({
   idade: z.number(),
   peso: z.number(),
