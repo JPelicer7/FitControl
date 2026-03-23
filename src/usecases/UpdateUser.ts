@@ -26,7 +26,7 @@ export class UpdateUser {
       where: { id: dto.userId, academiaId: dto.academiaId },
     });
 
-    if (!user) throw new NotFoundError("Não foi possível encontrar o usuário.");
+    if (!user) throw new NotFoundError("Não foi possível encontrar o usuário!");
 
     const updatedUser = await prisma.user.update({
       where: { id: user.id },

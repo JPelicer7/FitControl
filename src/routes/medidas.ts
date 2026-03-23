@@ -10,8 +10,11 @@ import {
   CreateMedidasBodySchema,
   CreateMedidasDataSchema,
   ErrorSchema,
+  updateMedidasBodySchema,
+  updateMedidasDataSchema,
 } from "../schemas/index.js";
 import { CreateMedidas } from "../usecases/CreateMedidas.js";
+import { UpdateMedidas } from "../usecases/UpdateMedidas.js";
 
 export const medidasRouter = async (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -49,6 +52,63 @@ export const medidasRouter = async (app: FastifyInstance) => {
           ...request.body,
           userId: request.params.userId,
           academiaId: session.user.academiaId,
+        });
+
+        return reply.status(201).send(result);
+      } catch (error) {
+        app.log.error(error);
+        if (error instanceof NotFoundError) {
+          return reply.status(404).send({
+            error: error.message,
+            code: "NOT_FOUND",
+          });
+        }
+
+        return reply.status(500).send({
+          error: "Internal server error",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  });
+
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "PUT",
+    url: "/user/:userId/:medidaId",
+    schema: {
+      operationId: "UpdateMedidas",
+      tags: ["Medidas"],
+      summary: "Update medidas User",
+      params: z.object({
+        userId: z.string(),
+        medidaId: z.string(),
+      }),
+      body: updateMedidasBodySchema,
+      response: {
+        201: updateMedidasDataSchema,
+        401: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      try {
+        const session = await auth.api.getSession({
+          headers: fromNodeHeaders(request.headers),
+        });
+        if (!session) {
+          return reply.status(401).send({
+            error: "Unauthorized",
+            code: "UNAUTHORIZED",
+          });
+        }
+
+        const updateMedida = new UpdateMedidas();
+        const result = await updateMedida.execute({
+          ...request.body,
+          academiaId: session.user.academiaId,
+          userId: request.params.userId,
+          medidaId: request.params.medidaId,
         });
 
         return reply.status(201).send(result);
