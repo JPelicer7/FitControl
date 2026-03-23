@@ -2,6 +2,7 @@ import { NotFoundError } from "../errors/index.js";
 import { prisma } from "../lib/db.js";
 
 interface InputDto {
+  academiaId: string;
   userId: string;
   idade: number;
   peso: number;
@@ -25,10 +26,10 @@ interface InputDto {
   dobra_adbdominal?: number;
   dobra_coxa?: number;
   dobra_peitoral?: number;
-  imc: number;
+  //imc: number;
   percentual_gordura?: number;
-  massa_magra?: number;
-  massa_gorda?: number;
+  //massa_magra?: number;
+  //massa_gorda?: number;
 }
 
 interface OutputDto {
@@ -42,7 +43,7 @@ interface OutputDto {
 export class CreateMedidas {
   async execute(dto: InputDto): Promise<OutputDto> {
     const aluno = await prisma.user.findUnique({
-      where: { id: dto.userId },
+      where: { id: dto.userId, academiaId: dto.academiaId },
     });
     if (!aluno) throw new NotFoundError("Usuário não encontrado!");
 

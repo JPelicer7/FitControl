@@ -15,6 +15,7 @@ import {
 import z from "zod";
 
 import { auth } from "./lib/auth.js";
+import { medidasRouter } from "./routes/medidas.js";
 import { userRoutes } from "./routes/user.js";
 
 const app = Fastify({
@@ -96,9 +97,9 @@ app.withTypeProvider<ZodTypeProvider>().route({
 //   routePrefix: "/docs",
 // });
 
-//Rota create User
+//Rotas
 await app.register(userRoutes, { prefix: "/user" });
-
+await app.register(medidasRouter, { prefix: "/medidas" });
 // Register authentication endpoint
 app.route({
   method: ["GET", "POST"],

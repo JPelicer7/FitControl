@@ -44,3 +44,39 @@ export const GetUsersDataSchema = z.array(
     updatedAt: z.date(),
   }),
 );
+
+export const CreateMedidasBodySchema = z.object({
+  idade: z.number(),
+  peso: z.number(),
+  alturaCentimetros: z.number(),
+  ombro: z.number().optional(),
+  torax: z.number().optional(),
+  cintura: z.number().optional(),
+  abdomen: z.number().optional(),
+  quadril: z.number().optional(),
+  braco_relax_direi: z.number().optional(),
+  braco_contrai_direi: z.number().optional(),
+  braco_relax_esq: z.number().optional(),
+  braco_contrai_esq: z.number().optional(),
+  antebraco_dir: z.number().optional(),
+  antebraco_esq: z.number().optional(),
+  coxa_dir: z.number().optional(),
+  coxa_esq: z.number().optional(),
+  dobra_triceps: z.number().optional(),
+  dobra_supraescapular: z.number().optional(),
+  dobra_suprailica: z.number().optional(),
+  dobra_adbdominal: z.number().optional(),
+  dobra_coxa: z.number().optional(),
+  dobra_peitoral: z.number().optional(),
+  //imc: z.number().optional(),
+  percentual_gordura: z.number().optional(),
+  //massa_magra: z.number().optional()
+  //massa_gorda: z.number().optional()
+});
+
+export const CreateMedidasDataSchema = z.object({
+  userId: z.string(),
+  idade: z.number(),
+  peso: z.number(),
+  alturaCentimetros: z.number(),
+});

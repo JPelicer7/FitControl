@@ -173,6 +173,18 @@ export const userRoutes = async (app: FastifyInstance) => {
         return reply.status(201).send(result);
       } catch (error) {
         app.log.error(error);
+
+        if (error instanceof NotFoundError) {
+          return reply.status(404).send({
+            error: error.message,
+            code: "NOT_FOUND",
+          });
+        }
+
+        return reply.status(500).send({
+          error: "Internal server error",
+          code: "INTERNAL_SERVER_ERROR",
+        });
       }
     },
   });
