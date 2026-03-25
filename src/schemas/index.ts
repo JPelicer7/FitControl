@@ -36,14 +36,18 @@ export const UpdateUserDataSchema = z.object({
   Status: z.enum(Status),
 });
 
-export const GetUsersDataSchema = z.array(
-  z.object({
-    name: z.string(),
-    Status: z.enum(Status),
-    plano: z.enum(Plano),
-    updatedAt: z.date(),
-  }),
-);
+const UserSchema = z.object({
+  name: z.string(),
+  Status: z.enum(Status),
+  plano: z.enum(Plano),
+  telefone: z.string().nullable().optional(),
+  ultimaAvaliacao: z.coerce.date().nullable().optional(),
+});
+
+export const GetUsersDataSchema = z.object({
+  totalUsers: z.number(),
+  users: z.array(UserSchema),
+});
 
 export const GetUserParamsSchema = z.object({
   userId: z.string(),
@@ -98,9 +102,7 @@ export const GetUserDataSchema = z.object({
   }),
   medidas: z.object({
     todas: z.array(MedidaSchema),
-    comparacao: z
-      .record(z.string(), ComparacaoCampoSchema)
-      .nullable(),
+    comparacao: z.record(z.string(), ComparacaoCampoSchema).nullable(),
   }),
 });
 

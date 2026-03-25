@@ -7,27 +7,51 @@ interface InputDto {
 }
 
 interface OutputDto {
-  name: string;
-  Status: Status;
-  plano: Plano;
-  updatedAt: Date;
+  totalUsers: number;
+  users: {
+    name: string;
+    Status: Status;
+    plano: Plano;
+    telefone: string | null;
+    ultimaAvaliacao: Date | null;
+  }[];
 }
 
 export class GetUsers {
-  async execute(dto: InputDto): Promise<OutputDto[]> {
+  async execute(dto: InputDto): Promise<OutputDto> {
     const users = await prisma.user.findMany({
       where: { academiaId: dto.academiaId },
+      include: {
+        medidas: {
+          orderBy: { updatedAt: "desc" },
+          take: 1,
+          select: {
+            updatedAt: true,
+          },
+        },
+      },
     });
+
+    const totalUsers = await prisma.user.count({
+      where: { academiaId: dto.academiaId },
+    });
+
     if (!users)
       throw new NotFoundError(
         "Não foi possível encontrar usuários cadastrados.",
       );
 
-    return users.map((user) => ({
+    const formattedUsers = users.map((user) => ({
       name: user.name,
-      Status: user.Status,
       plano: user.plano,
-      updatedAt: user.updatedAt,
+      Status: user.Status,
+      telefone: user.telefone,
+      ultimaAvaliacao: user.medidas[0]?.updatedAt || null,
     }));
+
+    return {
+      users: formattedUsers,
+      totalUsers,
+    };
   }
 }
