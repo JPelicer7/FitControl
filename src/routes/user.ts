@@ -158,6 +158,13 @@ export const userRoutes = async (app: FastifyInstance) => {
       operationId: "GetUsers",
       tags: ["User"],
       summary: "Get Users",
+      querystring: z.object({
+        name: z.string().optional(),
+        Status: z.any().optional(),
+        plano: z.any().optional(),
+        page: z.coerce.number().min(1).optional(),
+        limit: z.coerce.number().min(1).max(100).optional(),
+      }),
       response: {
         201: GetUsersDataSchema,
         401: ErrorSchema,
@@ -178,9 +185,16 @@ export const userRoutes = async (app: FastifyInstance) => {
           });
         }
 
+        const { name, Status, plano, page, limit } = request.query;
+
         const getUsers = new GetUsers();
         const result = await getUsers.execute({
           academiaId: session.user.academiaId,
+          name: name,
+          Status: Status,
+          plano: plano,
+          page: page,
+          limit: limit,
         });
         return reply.status(201).send(result);
       } catch (error) {

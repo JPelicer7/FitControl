@@ -1,13 +1,21 @@
 import { NotFoundError } from "../errors/index.js";
+import { Prisma } from "../generated/prisma/client.js";
 import { Plano, Status } from "../generated/prisma/enums.js";
 import { prisma } from "../lib/db.js";
 
 interface InputDto {
   academiaId: string;
+  name?: string;
+  Status?: Status;
+  plano?: Plano;
+  page?: number;
+  limit?: number;
 }
 
 interface OutputDto {
   totalUsers: number;
+  totalPages: number;
+  currentPage: number;
   users: {
     name: string;
     Status: Status;
@@ -19,8 +27,30 @@ interface OutputDto {
 
 export class GetUsers {
   async execute(dto: InputDto): Promise<OutputDto> {
+    // 👇 Criamos o filtro dinâmico
+    const whereClause: Prisma.UserWhereInput = {
+      academiaId: dto.academiaId,
+    };
+    // Adiciona os filtros apenas se eles vierem no DTO
+    if (dto.name) {
+      whereClause.name = { contains: dto.name, mode: "insensitive" }; // insensitive para ignorar maiúsculas/minúsculas
+    }
+    if (dto.Status) {
+      whereClause.Status = dto.Status;
+    }
+    if (dto.plano) {
+      whereClause.plano = dto.plano;
+    }
+
+    // 👇 Configuração da Paginação
+    const page = dto.page && dto.page > 0 ? dto.page : 1;
+    const limit = dto.limit && dto.limit > 0 ? dto.limit : 2;
+    const skip = (page - 1) * limit;
+
     const users = await prisma.user.findMany({
-      where: { academiaId: dto.academiaId },
+      where: whereClause,
+      take: limit,
+      skip: skip,
       include: {
         medidas: {
           orderBy: { updatedAt: "desc" },
@@ -32,9 +62,16 @@ export class GetUsers {
       },
     });
 
-    const totalUsers = await prisma.user.count({
-      where: { academiaId: dto.academiaId },
-    });
+    const totalUsers = await prisma.user.count({ where: whereClause });
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    if (!users || users.length === 0) {
+      return { users: [], totalUsers: 0, totalPages: 0, currentPage: page };
+    }
+
+    // const totalUsers = await prisma.user.count({
+    //   where: { academiaId: dto.academiaId },
+    // });
 
     if (!users)
       throw new NotFoundError(
@@ -52,6 +89,8 @@ export class GetUsers {
     return {
       users: formattedUsers,
       totalUsers,
+      totalPages,
+      currentPage: page,
     };
   }
 }

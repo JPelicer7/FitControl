@@ -47,6 +47,8 @@ const UserSchema = z.object({
 
 export const GetUsersDataSchema = z.object({
   totalUsers: z.number(),
+  totalPages: z.number(),
+  currentPage: z.number(),
   users: z.array(UserSchema),
 });
 
