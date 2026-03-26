@@ -1,8 +1,9 @@
-import { NotFoundError } from "../errors/index.js";
+import { NotFoundError, UserAlreadyExists } from "../errors/index.js";
 import { Plano } from "../generated/prisma/enums.js";
 import { Role } from "../generated/prisma/enums.js";
 import { Status } from "../generated/prisma/enums.js";
 import { auth } from "../lib/auth.js";
+import { prisma } from "../lib/db.js";
 
 interface InputDto {
   name: string;
@@ -22,6 +23,16 @@ interface OutputDto {
 
 export class CreateUser {
   async execute(dto: InputDto): Promise<OutputDto> {
+    const userExists = await prisma.user.findUnique({
+      where: { email: dto.email },
+    });
+
+    if (userExists) {
+      throw new UserAlreadyExists(
+        "Este e-mail já está cadastrado em nossa plataforma.",
+      );
+    }
+
     const newUser = await auth.api.signUpEmail({
       body: {
         name: dto.name,

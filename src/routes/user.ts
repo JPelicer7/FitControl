@@ -3,7 +3,7 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 
-import { NotFoundError } from "../errors/index.js";
+import { NotFoundError, UserAlreadyExists } from "../errors/index.js";
 //import { NotFoundError } from "../erros/index.js";
 import { auth } from "../lib/auth.js";
 import {
@@ -34,6 +34,7 @@ export const userRoutes = async (app: FastifyInstance) => {
         201: CreateUserDataSchema,
         401: ErrorSchema,
         404: ErrorSchema,
+        409: ErrorSchema,
         500: ErrorSchema,
       },
     },
@@ -74,6 +75,13 @@ export const userRoutes = async (app: FastifyInstance) => {
           return reply.status(404).send({
             error: error.message,
             code: "NOT_FOUND",
+          });
+        }
+
+        if (error instanceof UserAlreadyExists) {
+          return reply.status(409).send({
+            error: error.message,
+            code: "USER_ALREADY_EXISTS",
           });
         }
 
