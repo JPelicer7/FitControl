@@ -15,6 +15,7 @@ export const CreateUserBodySchema = z.object({
   plano: z.enum(Plano),
   role: z.enum(Role),
   Status: z.enum(Status),
+  telefone: z.string().optional(),
 });
 
 export const CreateUserDataSchema = z.object({

@@ -18,6 +18,7 @@ export const auth = betterAuth({
       Status: { type: "string" },
       plano: { type: "string" },
       academiaId: { type: "string" },
+      telefone: { type: "string", required: false },
     },
   },
   plugins: [openAPI()],

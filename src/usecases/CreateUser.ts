@@ -12,6 +12,7 @@ interface InputDto {
   plano: Plano;
   role: Role;
   Status: Status;
+  telefone?: string;
 }
 
 interface OutputDto {
@@ -29,6 +30,7 @@ export class CreateUser {
         academiaId: dto.academiaId,
         plano: dto.plano,
         role: "Aluno",
+        telefone: dto.telefone,
         Status: dto.Status,
       },
     });
