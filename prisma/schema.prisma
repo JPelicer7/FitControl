@@ -78,6 +78,8 @@ model Medidas {
   antebraco_esq        Float?
   coxa_dir             Float?
   coxa_esq             Float?
+  panturrilha_dir      Float?
+  panturrilha_esq      Float?
   dobra_triceps        Float?
   dobra_supraescapular Float?
   dobra_suprailica     Float?

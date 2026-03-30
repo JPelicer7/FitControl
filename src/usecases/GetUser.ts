@@ -26,6 +26,8 @@ type CampoMedida =
   | "antebraco_esq"
   | "coxa_dir"
   | "coxa_esq"
+  | "panturrilha_dir"
+  | "panturrilha_esq"
   | "dobra_triceps"
   | "dobra_supraescapular"
   | "dobra_suprailica"
@@ -74,6 +76,8 @@ const CAMPOS_COMPARAVEIS: CampoMedida[] = [
   "antebraco_esq",
   "coxa_dir",
   "coxa_esq",
+  "panturrilha_dir",
+  "panturrilha_esq",
   "dobra_triceps",
   "dobra_supraescapular",
   "dobra_suprailica",

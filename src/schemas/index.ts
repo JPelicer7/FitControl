@@ -39,6 +39,7 @@ export const UpdateUserDataSchema = z.object({
 
 const UserSchema = z.object({
   name: z.string(),
+  id: z.string(),
   Status: z.enum(Status),
   plano: z.enum(Plano),
   telefone: z.string().nullable().optional(),
@@ -77,6 +78,8 @@ export const MedidaSchema = z.object({
   antebraco_esq: medidaOptionalNumber(),
   coxa_dir: medidaOptionalNumber(),
   coxa_esq: medidaOptionalNumber(),
+  panturrilha_dir: medidaOptionalNumber(),
+  panturrilha_esq: medidaOptionalNumber(),
   dobra_triceps: medidaOptionalNumber(),
   dobra_supraescapular: medidaOptionalNumber(),
   dobra_suprailica: medidaOptionalNumber(),
@@ -126,6 +129,8 @@ export const CreateMedidasBodySchema = z.object({
   antebraco_esq: z.number().optional(),
   coxa_dir: z.number().optional(),
   coxa_esq: z.number().optional(),
+  panturrilha_dir: z.number().optional(),
+  panturrilha_esq: z.number().optional(),
   dobra_triceps: z.number().optional(),
   dobra_supraescapular: z.number().optional(),
   dobra_suprailica: z.number().optional(),

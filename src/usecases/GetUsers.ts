@@ -17,6 +17,7 @@ interface OutputDto {
   totalPages: number;
   currentPage: number;
   users: {
+    id: string;
     name: string;
     Status: Status;
     plano: Plano;
@@ -83,6 +84,7 @@ export class GetUsers {
       plano: user.plano,
       Status: user.Status,
       telefone: user.telefone,
+      id: user.id,
       ultimaAvaliacao: user.medidas[0]?.updatedAt || null,
     }));
 
