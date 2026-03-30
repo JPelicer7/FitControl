@@ -99,23 +99,16 @@ function calcularComparacao(
   const calcDiff = (v1: number, v2: number) => parseFloat((v1 - v2).toFixed(2));
 
   for (const campo of CAMPOS_COMPARAVEIS) {
-    const valorAtual = atual[campo];
-    const valorAnterior = anterior[campo];
+    const valorAtual = atual[campo] ?? 0;
+    const valorAnterior = anterior[campo] ?? 0;
 
-    if (
-      valorAtual !== undefined &&
-      valorAtual !== null &&
-      valorAnterior !== undefined &&
-      valorAnterior !== null &&
-      typeof valorAtual === "number" &&
-      typeof valorAnterior === "number"
-    ) {
-      comparacao[campo] = {
-        atual: valorAtual,
-        anterior: valorAnterior,
-        diferenca: calcDiff(valorAtual, valorAnterior),
-      };
-    }
+    if (valorAtual === 0 && valorAnterior === 0) continue;
+
+    comparacao[campo] = {
+      atual: valorAtual as number,
+      anterior: valorAnterior as number,
+      diferenca: calcDiff(valorAtual as number, valorAnterior as number),
+    };
   }
 
   return comparacao;
