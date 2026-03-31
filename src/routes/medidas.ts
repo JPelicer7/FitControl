@@ -103,6 +103,13 @@ export const medidasRouter = async (app: FastifyInstance) => {
           });
         }
 
+        if (session.user.role !== "Dono") {
+          return reply.status(401).send({
+            error: "Unauthorized",
+            code: "UNAUTHORIZED",
+          });
+        }
+
         const updateMedida = new UpdateMedidas();
         const result = await updateMedida.execute({
           ...request.body,

@@ -28,13 +28,12 @@ interface OutputDto {
 
 export class GetUsers {
   async execute(dto: InputDto): Promise<OutputDto> {
-    // 👇 Criamos o filtro dinâmico
     const whereClause: Prisma.UserWhereInput = {
       academiaId: dto.academiaId,
     };
-    // Adiciona os filtros apenas se eles vierem no DTO
+
     if (dto.name) {
-      whereClause.name = { contains: dto.name, mode: "insensitive" }; // insensitive para ignorar maiúsculas/minúsculas
+      whereClause.name = { contains: dto.name, mode: "insensitive" };
     }
     if (dto.Status) {
       whereClause.Status = dto.Status;
@@ -43,9 +42,8 @@ export class GetUsers {
       whereClause.plano = dto.plano;
     }
 
-    // 👇 Configuração da Paginação
     const page = dto.page && dto.page > 0 ? dto.page : 1;
-    const limit = dto.limit && dto.limit > 0 ? dto.limit : 2;
+    const limit = dto.limit && dto.limit > 0 ? dto.limit : 10;
     const skip = (page - 1) * limit;
 
     const users = await prisma.user.findMany({
