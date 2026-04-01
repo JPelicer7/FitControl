@@ -1,6 +1,5 @@
 import { NotFoundError } from "../errors/index.js";
 import { Plano } from "../generated/prisma/enums.js";
-import { Role } from "../generated/prisma/enums.js";
 import { Status } from "../generated/prisma/enums.js";
 import { prisma } from "../lib/db.js";
 
@@ -9,15 +8,15 @@ interface InputDto {
   academiaId: string;
   name?: string;
   plano?: Plano;
-  role?: Role;
   Status?: Status;
+  telefone?: string;
 }
 
 interface OutputDto {
   name: string;
   plano: Plano;
-  role: Role;
   Status: Status;
+  telefone?: string | null;
 }
 
 export class UpdateUser {
@@ -33,8 +32,8 @@ export class UpdateUser {
       data: {
         name: dto.name,
         plano: dto.plano,
-        role: dto.role,
         Status: dto.Status,
+        telefone: dto.telefone,
       },
     });
     return updatedUser;

@@ -129,8 +129,8 @@ export const userRoutes = async (app: FastifyInstance) => {
           academiaId: session.user.academiaId,
           name: request.body.name,
           plano: request.body.plano,
-          role: request.body.role,
           Status: request.body.Status,
+          telefone: request.body.telefone,
         });
 
         return reply.status(201).send(result);

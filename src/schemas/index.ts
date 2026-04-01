@@ -26,15 +26,15 @@ export const CreateUserDataSchema = z.object({
 export const UpdateUserBodySchema = z.object({
   name: z.string().optional(),
   plano: z.enum(Plano).optional(),
-  role: z.enum(Role).optional(),
   Status: z.enum(Status).optional(),
+  telefone: z.string().optional(),
 });
 
 export const UpdateUserDataSchema = z.object({
   name: z.string(),
   plano: z.enum(Plano),
-  role: z.enum(Role),
   Status: z.enum(Status),
+  telefone: z.string().nullable().optional(),
 });
 
 const UserSchema = z.object({

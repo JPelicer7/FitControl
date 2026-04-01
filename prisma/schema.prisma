@@ -14,13 +14,14 @@ datasource db {
 }
 
 model User {
-  id         String    @id
-  role       Role      @default(Aluno)
-  Status     Status    @default(Ativo)
-  plano      Plano     @default(Mensal)
+  id         String       @id
+  role       Role         @default(Aluno)
+  Status     Status       @default(Ativo)
+  plano      Plano        @default(Mensal)
   academiaId String
   telefone   String?
   medidas    Medidas[]
+  financeiro Financeiro[]
 
   academia      Academia  @relation(fields: [academiaId], references: [id])
   name          String
@@ -46,17 +47,22 @@ model Academia {
 }
 
 model Financeiro {
-  id             String    @id @default(uuid())
-  type           Type
-  categoria      Categoria
-  descricao      String
-  valor          Decimal
-  data_pagamento DateTime  @default(now())
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  academiaId     String
+  id              String          @id @default(uuid())
+  userId          String
+  type            Type
+  categoria       Categoria
+  status          StatusPagamento @default(Pago)
+  descricao       String
+  valor           Decimal         @db.Decimal(10, 2)
+  data_pagamento  DateTime        @default(now())
+  data_vencimento DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  createdBy       String?
+  academiaId      String
 
   academia Academia @relation(fields: [academiaId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
 }
 
 model Medidas {
@@ -97,8 +103,14 @@ model Medidas {
 }
 
 enum Type {
-  Entrada
-  Saida
+  Receita
+  Despesa
+}
+
+enum StatusPagamento {
+  Pago
+  Pendente
+  Cancelado
 }
 
 enum Categoria {
