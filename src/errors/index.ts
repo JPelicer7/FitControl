@@ -11,3 +11,10 @@ export class UserAlreadyExists extends Error {
     this.name = "Usuário já existente";
   }
 }
+
+export class ForbiddenError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ForbiddenError";
+  }
+}

@@ -15,6 +15,7 @@ import {
 import z from "zod";
 
 import { auth } from "./lib/auth.js";
+import { financeiroRoutes } from "./routes/financeiro.js";
 import { medidasRouter } from "./routes/medidas.js";
 import { userRoutes } from "./routes/user.js";
 
@@ -100,6 +101,7 @@ app.withTypeProvider<ZodTypeProvider>().route({
 //Rotas
 await app.register(userRoutes, { prefix: "/user" });
 await app.register(medidasRouter, { prefix: "/medidas" });
+await app.register(financeiroRoutes, { prefix: "/financeiro" });
 // Register authentication endpoint
 app.route({
   method: ["GET", "POST"],

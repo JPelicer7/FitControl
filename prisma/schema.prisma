@@ -38,17 +38,19 @@ model User {
 }
 
 model Academia {
-  id          String       @id @default(uuid())
-  nome        String
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  usuarios    User[]
-  financeiros Financeiro[]
+  id               String             @id @default(uuid())
+  nome             String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  usuarios         User[]
+  financeiros      Financeiro[]
+  fechamentoMensal FechamentoMensal[]
 }
 
 model Financeiro {
   id              String          @id @default(uuid())
   userId          String
+  academiaId      String
   type            Type
   categoria       Categoria
   status          StatusPagamento @default(Pago)
@@ -59,10 +61,26 @@ model Financeiro {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   createdBy       String?
-  academiaId      String
+  fechado         Boolean         @default(false)
 
   academia Academia @relation(fields: [academiaId], references: [id])
   user     User     @relation(fields: [userId], references: [id])
+}
+
+model FechamentoMensal {
+  id           String   @id @default(uuid())
+  academiaId   String
+  mes          Int
+  ano          Int
+  receitaTotal Decimal  @db.Decimal(10, 2)
+  despesaTotal Decimal  @db.Decimal(10, 2)
+  lucroLiquido Decimal  @db.Decimal(10, 2)
+  fechadoEm    DateTime @default(now())
+  fechadoPor   String
+
+  academia Academia @relation(fields: [academiaId], references: [id])
+
+  @@unique([mes, ano, academiaId])
 }
 
 model Medidas {

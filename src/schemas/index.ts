@@ -1,6 +1,13 @@
 import z from "zod";
 
-import { Plano, Role, Status } from "../generated/prisma/enums.js";
+import {
+  Categoria,
+  Plano,
+  Role,
+  Status,
+  StatusPagamento,
+  Type,
+} from "../generated/prisma/enums.js";
 
 export const ErrorSchema = z.object({
   error: z.string(),
@@ -182,4 +189,20 @@ export const updateMedidasBodySchema = z.object({
 export const updateMedidasDataSchema = z.object({
   userId: z.string(),
   medidaId: z.string(),
+});
+
+//-----------------Schema Financeiro-------------
+export const CreateTransactionBodySchema = z.object({
+  type: z.enum(Type),
+  categoria: z.enum(Categoria),
+  status: z.enum(StatusPagamento),
+  descricao: z.string(),
+  valor: z.number(),
+  data_pagamento: z.coerce.date(),
+  data_vencimento: z.coerce.date().optional(),
+});
+
+export const CreateTransactionDataSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
 });
