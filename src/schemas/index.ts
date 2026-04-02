@@ -206,3 +206,24 @@ export const CreateTransactionDataSchema = z.object({
   id: z.string(),
   userId: z.string(),
 });
+
+export const TransactionsSchema = z.object({
+  type: z.enum(Type),
+  categoria: z.enum(Categoria),
+  descricao: z.string(),
+  valor: z.number(),
+  data_pagamento: z.coerce.date(),
+});
+
+export const GraficoPizzaSchema = z.object({
+  categoria: z.string(),
+  valor: z.number(),
+});
+
+export const GetTransactionsDataSchema = z.object({
+  receitaTotal: z.number(),
+  despesaTotal: z.number(),
+  lucroLiquido: z.number(),
+  graficoDespesas: z.array(GraficoPizzaSchema),
+  transactions: z.array(TransactionsSchema),
+});
