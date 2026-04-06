@@ -5,6 +5,7 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import {
   FechamentoAlreadyExists,
   ForbiddenError,
+  NotExistTransactions,
   NotFoundError,
 } from "../errors/index.js";
 import { auth } from "../lib/auth.js";
@@ -213,15 +214,18 @@ export const financeiroRoutes = async (app: FastifyInstance) => {
           });
         }
 
-        if (error instanceof ForbiddenError) {
-          return reply.status(409).send({
+        if (error instanceof FechamentoAlreadyExists) {
+          return reply.status(404).send({
             error: error.message,
-            code: "ForbiddenError",
+            code: "FechamentoAlready",
           });
         }
 
-        if (error instanceof FechamentoAlreadyExists) {
-          return reply.status(404);
+        if (error instanceof NotExistTransactions) {
+          return reply.status(409).send({
+            error: error.message,
+            code: "NotExistTransactions",
+          });
         }
 
         return reply.status(500).send({

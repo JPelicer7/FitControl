@@ -25,3 +25,10 @@ export class FechamentoAlreadyExists extends Error {
     this.name = "FechamentoAlreadyExists";
   }
 }
+
+export class NotExistTransactions extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "NotExistTransactions";
+  }
+}

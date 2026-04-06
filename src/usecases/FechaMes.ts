@@ -1,4 +1,8 @@
-import { FechamentoAlreadyExists, NotFoundError } from "../errors/index.js";
+import {
+  FechamentoAlreadyExists,
+  NotExistTransactions,
+  NotFoundError,
+} from "../errors/index.js";
 import { Prisma } from "../generated/prisma/client.js";
 import { prisma } from "../lib/db.js";
 
@@ -29,7 +33,9 @@ export class FechaMes {
     });
 
     if (fechamentoExistente)
-      throw new NotFoundError("O fechamento deste mês já foi realizado.");
+      throw new FechamentoAlreadyExists(
+        "O fechamento deste mês já foi realizado.",
+      );
 
     const transactions = await prisma.financeiro.findMany({
       where: {
@@ -46,7 +52,7 @@ export class FechaMes {
       );
 
     if (transactions.length === 0) {
-      throw new NotFoundError(
+      throw new NotExistTransactions(
         "Não há transações pagas para fechar nesse período.",
       );
     }
