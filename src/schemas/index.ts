@@ -227,3 +227,7 @@ export const GetTransactionsDataSchema = z.object({
   graficoDespesas: z.array(GraficoPizzaSchema),
   transactions: z.array(TransactionsSchema),
 });
+
+export const FechaMesDataSchema = z.object({
+  message: z.string(),
+});
