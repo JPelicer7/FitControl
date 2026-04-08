@@ -231,3 +231,16 @@ export const GetTransactionsDataSchema = z.object({
 export const FechaMesDataSchema = z.object({
   message: z.string(),
 });
+
+export const GetFinanceiroHistoryDataSchema = z.object({
+  historico: z.array(
+    z.object({
+      receitaTotal: z.number(),
+      despesaTotal: z.number(),
+      lucroLiquido: z.number(),
+      mes: z.number(),
+      ano: z.number(),
+      fechadoEm: z.coerce.date(),
+    }),
+  ),
+});
