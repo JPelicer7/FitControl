@@ -131,6 +131,13 @@ export const userRoutes = async (app: FastifyInstance) => {
           });
         }
 
+        if (session.user.role !== "Dono") {
+          return reply.status(401).send({
+            error: "Unauthorized",
+            code: "UNAUTHORIZED",
+          });
+        }
+
         const updateUser = new UpdateUser();
         const result = await updateUser.execute({
           userId: request.params.userId,
@@ -187,6 +194,13 @@ export const userRoutes = async (app: FastifyInstance) => {
         });
 
         if (!session) {
+          return reply.status(401).send({
+            error: "Unauthorized",
+            code: "UNAUTHORIZED",
+          });
+        }
+
+        if (session.user.role !== "Dono") {
           return reply.status(401).send({
             error: "Unauthorized",
             code: "UNAUTHORIZED",

@@ -258,3 +258,24 @@ export const GetFinanceiroHistoryDataSchema = z.object({
     }),
   ),
 });
+
+// --------------------- Schema Exercicios ------------
+export const CreateExerciciosBodySchema = z.object({
+  nome: z.string(),
+  grupoMuscular: z.string().optional(),
+  videoUrl: z.string().optional(),
+});
+
+export const CreateExercicioDataSchema = z.object({
+  id: z.string(),
+});
+
+export const GetExerciciosDataSchema = z.object({
+  exercicios: z.array(
+    z.object({
+      nome: z.string(),
+      grupoMuscular: z.string().optional(),
+      videoUrl: z.string().optional(),
+    }),
+  ),
+});

@@ -14,14 +14,15 @@ datasource db {
 }
 
 model User {
-  id         String       @id
-  role       Role         @default(Aluno)
-  Status     Status       @default(Ativo)
-  plano      Plano        @default(Mensal)
+  id         String        @id
+  role       Role          @default(Aluno)
+  Status     Status        @default(Ativo)
+  plano      Plano         @default(Mensal)
   academiaId String
   telefone   String?
   medidas    Medidas[]
   financeiro Financeiro[]
+  treino     AlunoTreino[]
 
   academia      Academia  @relation(fields: [academiaId], references: [id])
   name          String
@@ -156,6 +157,54 @@ enum Plano {
   Trimestral
   Semestral
   Anual
+}
+
+model Exercicio {
+  id               String            @id @default(uuid())
+  nome             String
+  grupoMuscular    String?
+  videoUrl         String?
+  academiaId String?
+  treinoExercicios TreinoExercicio[]
+
+  @@unique([nome, academiaId])
+}
+
+model Treino {
+  id          String   @id @default(uuid())
+  nome        String
+  descricao   String?
+  academiaId  String
+  criadoPorId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  exercicios TreinoExercicio[]
+  alunos     AlunoTreino[]
+}
+
+model TreinoExercicio {
+  id         String  @id @default(uuid())
+  treinoId   String
+  exercicoId String
+  series     Int
+  repeticoes String
+  carga      String?
+  ordem      Int?
+
+  treino    Treino    @relation(fields: [treinoId], references: [id], onDelete: Cascade)
+  exercicio Exercicio @relation(fields: [exercicoId], references: [id], onDelete: Cascade)
+}
+
+model AlunoTreino {
+  id       String @id @default(uuid())
+  userId   String
+  treinoId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  treino Treino @relation(fields: [treinoId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, treinoId])
 }
 
 model Session {

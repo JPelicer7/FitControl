@@ -1,37 +1,33 @@
 import { fromNodeHeaders } from "better-auth/node";
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
-import z from "zod";
 
-import { NotFoundError } from "../errors/index.js";
-//import { NotFoundError } from "../erros/index.js";
+import { ForbiddenError, NotFoundError } from "../errors/index.js";
 import { auth } from "../lib/auth.js";
 import {
-  CreateMedidasBodySchema,
-  CreateMedidasDataSchema,
+  CreateExercicioDataSchema,
+  CreateExerciciosBodySchema,
   ErrorSchema,
-  updateMedidasBodySchema,
-  updateMedidasDataSchema,
+  GetExerciciosDataSchema,
 } from "../schemas/index.js";
-import { CreateMedidas } from "../usecases/CreateMedidas.js";
-import { UpdateMedidas } from "../usecases/UpdateMedidas.js";
+import { CreateExercicio } from "../usecases/CreateExercicio.js";
+import { GetExercicios } from "../usecases/GetExercicios.js";
 
-export const medidasRouter = async (app: FastifyInstance) => {
+export const exercicioRoutes = async (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "POST",
-    url: "/:userId",
+    url: "/exercicio",
     schema: {
-      operationId: "CreateMedidas",
-      tags: ["Medidas"],
-      summary: "Create medidas User",
-      params: z.object({
-        userId: z.string(),
-      }),
-      body: CreateMedidasBodySchema,
+      operationId: "createExercicio",
+      tags: ["Exercicio"],
+      summary: "Create Exercicio",
+      body: CreateExerciciosBodySchema,
       response: {
-        201: CreateMedidasDataSchema,
+        201: CreateExercicioDataSchema,
         401: ErrorSchema,
+        403: ErrorSchema,
         404: ErrorSchema,
+        409: ErrorSchema,
         500: ErrorSchema,
       },
     },
@@ -40,6 +36,7 @@ export const medidasRouter = async (app: FastifyInstance) => {
         const session = await auth.api.getSession({
           headers: fromNodeHeaders(request.headers),
         });
+
         if (!session) {
           return reply.status(401).send({
             error: "Unauthorized",
@@ -47,27 +44,30 @@ export const medidasRouter = async (app: FastifyInstance) => {
           });
         }
 
-        if (session.user.role !== "Dono") {
-          return reply.status(401).send({
-            error: "Unauthorized",
-            code: "UNAUTHORIZED",
-          });
-        }
-
-        const createMedidas = new CreateMedidas();
-        const result = await createMedidas.execute({
-          ...request.body,
-          userId: request.params.userId,
-          academiaId: session.user.academiaId,
+        const createExercicio = new CreateExercicio();
+        const result = await createExercicio.execute({
+          userId: session.user.id,
+          //academiaId: session.user.id,
+          nome: request.body.nome,
+          grupoMuscular: request.body.grupoMuscular,
+          videoUrl: request.body.videoUrl,
         });
 
         return reply.status(201).send(result);
       } catch (error) {
         app.log.error(error);
+
         if (error instanceof NotFoundError) {
           return reply.status(404).send({
             error: error.message,
             code: "NOT_FOUND",
+          });
+        }
+
+        if (error instanceof ForbiddenError) {
+          return reply.status(403).send({
+            error: error.message,
+            code: "ForbiddenError",
           });
         }
 
@@ -80,21 +80,18 @@ export const medidasRouter = async (app: FastifyInstance) => {
   });
 
   app.withTypeProvider<ZodTypeProvider>().route({
-    method: "PUT",
-    url: "/user/:userId/:medidaId",
+    method: "GET",
+    url: "/exercicios",
     schema: {
-      operationId: "UpdateMedidas",
-      tags: ["Medidas"],
-      summary: "Update medidas User",
-      params: z.object({
-        userId: z.string(),
-        medidaId: z.string(),
-      }),
-      body: updateMedidasBodySchema,
+      operationId: "getExercicios",
+      tags: ["Exercicio"],
+      summary: "Get Exercicios",
       response: {
-        201: updateMedidasDataSchema,
+        201: GetExerciciosDataSchema,
         401: ErrorSchema,
+        403: ErrorSchema,
         404: ErrorSchema,
+        409: ErrorSchema,
         500: ErrorSchema,
       },
     },
@@ -103,6 +100,7 @@ export const medidasRouter = async (app: FastifyInstance) => {
         const session = await auth.api.getSession({
           headers: fromNodeHeaders(request.headers),
         });
+
         if (!session) {
           return reply.status(401).send({
             error: "Unauthorized",
@@ -110,28 +108,26 @@ export const medidasRouter = async (app: FastifyInstance) => {
           });
         }
 
-        if (session.user.role !== "Dono") {
-          return reply.status(401).send({
-            error: "Unauthorized",
-            code: "UNAUTHORIZED",
-          });
-        }
-
-        const updateMedida = new UpdateMedidas();
-        const result = await updateMedida.execute({
-          ...request.body,
+        const getExercicios = new GetExercicios();
+        const result = await getExercicios.execute({
+          userId: session.user.id,
           academiaId: session.user.academiaId,
-          userId: request.params.userId,
-          medidaId: request.params.medidaId,
         });
-
         return reply.status(201).send(result);
       } catch (error) {
         app.log.error(error);
+
         if (error instanceof NotFoundError) {
           return reply.status(404).send({
             error: error.message,
             code: "NOT_FOUND",
+          });
+        }
+
+        if (error instanceof ForbiddenError) {
+          return reply.status(403).send({
+            error: error.message,
+            code: "ForbiddenError",
           });
         }
 
