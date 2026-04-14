@@ -39,6 +39,7 @@ export class GetGrafico {
       orderBy: { createdAt: "desc" },
       take: 5,
       select: {
+        id: true,
         peso: true,
         percentual_gordura: true,
         createdAt: true,

@@ -234,6 +234,7 @@ export const userRoutes = async (app: FastifyInstance) => {
       response: {
         200: GetUserDataSchema,
         401: ErrorSchema,
+        403: ErrorSchema,
         404: ErrorSchema,
         500: ErrorSchema,
       },
@@ -252,9 +253,18 @@ export const userRoutes = async (app: FastifyInstance) => {
         }
 
         const getUser = new GetUser();
+        const parsedRole = z.enum(Role).safeParse(session.user.role);
+        if (!parsedRole.success) {
+          return reply.status(401).send({
+            error: "Unauthorized",
+            code: "UNAUTHORIZED",
+          });
+        }
         const result = await getUser.execute({
           userId: request.params.userId,
           academiaId: session.user.academiaId,
+          role: parsedRole.data,
+          requestId: session.user.id,
         });
         return reply.status(200).send(result);
       } catch (error) {
@@ -264,6 +274,13 @@ export const userRoutes = async (app: FastifyInstance) => {
           return reply.status(404).send({
             error: error.message,
             code: "NOT_FOUND",
+          });
+        }
+
+        if (error instanceof ForbiddenError) {
+          return reply.status(403).send({
+            error: error.message,
+            code: "ForbiddenError",
           });
         }
 

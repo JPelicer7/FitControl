@@ -1,11 +1,13 @@
-import { NotFoundError } from "../errors/index.js";
-import type { Medidas } from "../generated/prisma/client.js";
+import { ForbiddenError, NotFoundError } from "../errors/index.js";
+import type { Medidas, Role } from "../generated/prisma/client.js";
 import { Plano, Status } from "../generated/prisma/enums.js";
 import { prisma } from "../lib/db.js";
 
 interface InputDto {
   userId: string;
   academiaId: string;
+  role: Role;
+  requestId: string;
 }
 
 // Campos numéricos comparáveis entre avaliações
@@ -126,6 +128,12 @@ export class GetUser {
       },
     });
     if (!user) throw new NotFoundError("Usuário não encontrado!");
+
+    if (dto.role === "Aluno" && dto.userId !== dto.requestId) {
+      throw new ForbiddenError(
+        "Você não tem permissão para ver dados de outro aluno.",
+      );
+    }
 
     const medidas = user.medidas;
     const ultima = medidas[0] ?? null;
