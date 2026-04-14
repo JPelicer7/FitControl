@@ -29,6 +29,7 @@ export class GetTransactions {
   async execute(dto: InputDto): Promise<OutputDto> {
     const transactions = await prisma.financeiro.findMany({
       where: { academiaId: dto.academiaId, fechado: dto.fechado },
+      orderBy: { data_pagamento: "desc" },
     });
 
     if (!transactions)

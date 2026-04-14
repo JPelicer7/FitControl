@@ -3,13 +3,20 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 
-import { NotFoundError, UserAlreadyExists } from "../errors/index.js";
+import {
+  ForbiddenError,
+  NotFoundError,
+  UserAlreadyExists,
+} from "../errors/index.js";
+import { Role } from "../generated/prisma/enums.js";
 //import { NotFoundError } from "../erros/index.js";
 import { auth } from "../lib/auth.js";
 import {
   CreateUserBodySchema,
   CreateUserDataSchema,
   ErrorSchema,
+  GetGraficoDataSchema,
+  GetGraficoParamsSchema,
   GetUserDataSchema,
   GetUserParamsSchema,
   GetUsersDataSchema,
@@ -17,6 +24,7 @@ import {
   UpdateUserDataSchema,
 } from "../schemas/index.js";
 import { CreateUser } from "../usecases/CreateUser.js";
+import { GetGrafico } from "../usecases/GetGrafico.js";
 import { GetUser } from "../usecases/GetUser.js";
 import { GetUsers } from "../usecases/GetUsers.js";
 import { UpdateUser } from "../usecases/UpdateUser.js";
@@ -256,6 +264,76 @@ export const userRoutes = async (app: FastifyInstance) => {
           return reply.status(404).send({
             error: error.message,
             code: "NOT_FOUND",
+          });
+        }
+
+        return reply.status(500).send({
+          error: "Internal server error",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  });
+
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "GET",
+    url: "/:userId/getGrafico",
+    schema: {
+      operationId: "GetGrafico",
+      tags: ["User"],
+      summary: "Get Grafico",
+      params: GetGraficoParamsSchema,
+      response: {
+        200: GetGraficoDataSchema,
+        401: ErrorSchema,
+        403: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      try {
+        const session = await auth.api.getSession({
+          headers: fromNodeHeaders(request.headers),
+        });
+
+        if (!session) {
+          return reply.status(401).send({
+            error: "Unauthorized",
+            code: "UNAUTHORIZED",
+          });
+        }
+
+        const getGrafico = new GetGrafico();
+        const parsedRole = z.enum(Role).safeParse(session.user.role);
+        if (!parsedRole.success) {
+          return reply.status(401).send({
+            error: "Unauthorized",
+            code: "UNAUTHORIZED",
+          });
+        }
+        const result = await getGrafico.execute({
+          userId: request.params.userId,
+          academiaId: session.user.academiaId,
+          role: parsedRole.data,
+          requestId: session.user.id,
+        });
+
+        return reply.status(200).send(result);
+      } catch (error) {
+        app.log.error(error);
+
+        if (error instanceof NotFoundError) {
+          return reply.status(404).send({
+            error: error.message,
+            code: "NOT_FOUND",
+          });
+        }
+
+        if (error instanceof ForbiddenError) {
+          return reply.status(403).send({
+            error: error.message,
+            code: "ForbiddenError",
           });
         }
 

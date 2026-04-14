@@ -191,6 +191,20 @@ export const updateMedidasDataSchema = z.object({
   medidaId: z.string(),
 });
 
+export const GetGraficoParamsSchema = z.object({
+  userId: z.string(),
+});
+
+export const GetGraficoDataSchema = z.object({
+  historico: z.array(
+    z.object({
+      createdAt: z.coerce.date(),
+      peso: z.number(),
+      percentual_gordura: z.number(),
+    }),
+  ),
+});
+
 //-----------------Schema Financeiro-------------
 export const CreateTransactionBodySchema = z.object({
   type: z.enum(Type),
