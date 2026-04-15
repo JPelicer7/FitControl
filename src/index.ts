@@ -18,6 +18,8 @@ import { auth } from "./lib/auth.js";
 import { exercicioRoutes } from "./routes/exercicio.js";
 import { financeiroRoutes } from "./routes/financeiro.js";
 import { medidasRouter } from "./routes/medidas.js";
+import { treinoRoutes } from "./routes/treino.js";
+import { treinoExercRoutes } from "./routes/treinoExercicio.js";
 import { userRoutes } from "./routes/user.js";
 
 const app = Fastify({
@@ -104,6 +106,8 @@ await app.register(userRoutes, { prefix: "/user" });
 await app.register(medidasRouter, { prefix: "/medidas" });
 await app.register(financeiroRoutes, { prefix: "/financeiro" });
 await app.register(exercicioRoutes, { prefix: "/exercicio" });
+await app.register(treinoRoutes, { prefix: "/treino" });
+await app.register(treinoExercRoutes, { prefix: "/treinoExerc" });
 // Register authentication endpoint
 app.route({
   method: ["GET", "POST"],

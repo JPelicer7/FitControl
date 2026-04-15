@@ -279,3 +279,36 @@ export const GetExerciciosDataSchema = z.object({
     }),
   ),
 });
+
+// -------------------------- Schema Treinos --------------------
+export const CreateTreinoBodySchema = z.object({
+  nome: z.string(),
+  descricao: z.string().optional(),
+});
+
+export const CreateTreinoDataSchema = z.object({
+  id: z.string(),
+});
+
+export const GetTreinosDataSchema = z.object({
+  treinos: z.array(
+    z.object({
+      nome: z.string(),
+      descricao: z.string().optional(),
+    }),
+  ),
+});
+
+// ----------------------- Schema Treino Exercicio ---------
+
+export const CreateTreinoExercBodySchema = z.object({
+  exercicoId: z.string(),
+  series: z.number(),
+  repeticoes: z.string(),
+  carga: z.string().optional(),
+  ordem: z.number().optional(),
+});
+
+export const CreateTreinoExercDataSchema = z.object({
+  id: z.string(),
+});

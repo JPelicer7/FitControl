@@ -12,6 +12,13 @@ export class UserAlreadyExists extends Error {
   }
 }
 
+export class ExercAlreadyAdd extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "Exercício já adicionado a esse Treino.";
+  }
+}
+
 export class ForbiddenError extends Error {
   constructor(message: string) {
     super(message);
