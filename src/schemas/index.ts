@@ -302,7 +302,7 @@ export const GetTreinosDataSchema = z.object({
 // ----------------------- Schema Treino Exercicio ---------
 
 export const CreateTreinoExercBodySchema = z.object({
-  exercicoId: z.string(),
+  exercicioId: z.string(),
   series: z.number(),
   repeticoes: z.string(),
   carga: z.string().optional(),
@@ -310,5 +310,15 @@ export const CreateTreinoExercBodySchema = z.object({
 });
 
 export const CreateTreinoExercDataSchema = z.object({
+  id: z.string(),
+});
+
+//  ----------------------------- Schema AlunoTreino-------------------
+
+export const alunoTreinoBodySchema = z.object({
+  userId: z.string(),
+});
+
+export const alunoTreinoDataSchema = z.object({
   id: z.string(),
 });

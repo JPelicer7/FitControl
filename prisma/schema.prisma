@@ -186,14 +186,14 @@ model Treino {
 model TreinoExercicio {
   id         String  @id @default(uuid())
   treinoId   String
-  exercicoId String
+  exercicioId String
   series     Int
   repeticoes String
   carga      String?
   ordem      Int?
 
   treino    Treino    @relation(fields: [treinoId], references: [id], onDelete: Cascade)
-  exercicio Exercicio @relation(fields: [exercicoId], references: [id], onDelete: Cascade)
+  exercicio Exercicio @relation(fields: [exercicioId], references: [id], onDelete: Cascade)
 }
 
 model AlunoTreino {

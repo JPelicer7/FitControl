@@ -2,7 +2,11 @@ import { fromNodeHeaders } from "better-auth/node";
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
-import { ForbiddenError, NotFoundError } from "../errors/index.js";
+import {
+  ExercAlreadyAdd,
+  ForbiddenError,
+  NotFoundError,
+} from "../errors/index.js";
 import { auth } from "../lib/auth.js";
 import {
   CreateExercicioDataSchema,
@@ -47,7 +51,7 @@ export const exercicioRoutes = async (app: FastifyInstance) => {
         const createExercicio = new CreateExercicio();
         const result = await createExercicio.execute({
           userId: session.user.id,
-          //academiaId: session.user.id,
+          academiaId: session.user.academiaId,
           nome: request.body.nome,
           grupoMuscular: request.body.grupoMuscular,
           videoUrl: request.body.videoUrl,
@@ -68,6 +72,13 @@ export const exercicioRoutes = async (app: FastifyInstance) => {
           return reply.status(403).send({
             error: error.message,
             code: "ForbiddenError",
+          });
+        }
+
+        if (error instanceof ExercAlreadyAdd) {
+          return reply.status(409).send({
+            error: error.message,
+            code: "ExercAlreadyAdd",
           });
         }
 

@@ -15,6 +15,7 @@ import {
 import z from "zod";
 
 import { auth } from "./lib/auth.js";
+import { alunoTreinoRoutes } from "./routes/alunoTreino.js";
 import { exercicioRoutes } from "./routes/exercicio.js";
 import { financeiroRoutes } from "./routes/financeiro.js";
 import { medidasRouter } from "./routes/medidas.js";
@@ -108,6 +109,7 @@ await app.register(financeiroRoutes, { prefix: "/financeiro" });
 await app.register(exercicioRoutes, { prefix: "/exercicio" });
 await app.register(treinoRoutes, { prefix: "/treino" });
 await app.register(treinoExercRoutes, { prefix: "/treinoExerc" });
+await app.register(alunoTreinoRoutes, { prefix: "/alunoTreino" });
 // Register authentication endpoint
 app.route({
   method: ["GET", "POST"],

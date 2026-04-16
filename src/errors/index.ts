@@ -39,3 +39,10 @@ export class NotExistTransactions extends Error {
     this.name = "NotExistTransactions";
   }
 }
+
+export class VinculoExists extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "VinculoExists";
+  }
+}

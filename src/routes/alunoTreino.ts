@@ -4,32 +4,32 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 
 import {
-  ExercAlreadyAdd,
   ForbiddenError,
   NotFoundError,
+  VinculoExists,
 } from "../errors/index.js";
 import { auth } from "../lib/auth.js";
 import {
-  CreateTreinoExercBodySchema,
-  CreateTreinoExercDataSchema,
+  alunoTreinoBodySchema,
+  alunoTreinoDataSchema,
   ErrorSchema,
 } from "../schemas/index.js";
-import { CreateTreinoExercicio } from "../usecases/CreateTreinoExercicio.js";
+import { CreateAlunoTreino } from "../usecases/CreateAlunoTreino.js";
 
-export const treinoExercRoutes = async (app: FastifyInstance) => {
+export const alunoTreinoRoutes = async (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "POST",
     url: "/:treinoId",
     schema: {
-      operationId: "createTreinoExercio",
-      tags: ["TreinoExercicio"],
-      summary: "Create Treino Exercicio",
-      body: CreateTreinoExercBodySchema,
+      operationId: "createAlunoTreino",
+      tags: ["alunoTreino"],
+      summary: "Create vinculo Aluno ao Treino",
+      body: alunoTreinoBodySchema,
       params: z.object({
         treinoId: z.string(),
       }),
       response: {
-        201: CreateTreinoExercDataSchema,
+        201: alunoTreinoDataSchema,
         401: ErrorSchema,
         403: ErrorSchema,
         404: ErrorSchema,
@@ -57,18 +57,13 @@ export const treinoExercRoutes = async (app: FastifyInstance) => {
           });
         }
 
-        const createTreinoExercicio = new CreateTreinoExercicio();
-        const result = await createTreinoExercicio.execute({
-          userId: session.user.id,
+        const createAlunoTreino = new CreateAlunoTreino();
+        const result = await createAlunoTreino.execute({
+          donoId: session.user.id,
           academiaId: session.user.academiaId,
+          userId: request.body.userId,
           treinoId: request.params.treinoId,
-          exercicioId: request.body.exercicioId,
-          series: request.body.series,
-          carga: request.body.carga,
-          repeticoes: request.body.repeticoes,
-          ordem: request.body.ordem,
         });
-
         return reply.status(201).send(result);
       } catch (error) {
         app.log.error(error);
@@ -86,13 +81,11 @@ export const treinoExercRoutes = async (app: FastifyInstance) => {
           });
         }
 
-        if (error instanceof ExercAlreadyAdd) {
-          {
-            return reply.status(409).send({
-              error: error.message,
-              code: "ExercAlreadyAdd",
-            });
-          }
+        if (error instanceof VinculoExists) {
+          return reply.status(409).send({
+            error: error.message,
+            code: "ExercAlreadyAdd",
+          });
         }
 
         return reply.status(500).send({

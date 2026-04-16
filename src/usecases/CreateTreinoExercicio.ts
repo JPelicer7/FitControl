@@ -9,7 +9,7 @@ interface InputDto {
   userId: string;
   academiaId: string;
   treinoId: string;
-  exercicoId: string;
+  exercicioId: string;
   series: number;
   repeticoes: string;
   carga?: string;
@@ -39,7 +39,7 @@ export class CreateTreinoExercicio {
 
     const exercicioExists = await prisma.exercicio.findFirst({
       where: {
-        id: dto.exercicoId,
+        id: dto.exercicioId,
         OR: [{ academiaId: null }, { academiaId: dto.academiaId }],
       },
     });
@@ -47,7 +47,7 @@ export class CreateTreinoExercicio {
     if (!exercicioExists) throw new NotFoundError("Exercicio inexistente.");
 
     const exercAlreadyAdd = await prisma.treinoExercicio.findFirst({
-      where: { treinoId: dto.treinoId, exercicoId: dto.exercicoId },
+      where: { treinoId: dto.treinoId, exercicioId: dto.exercicioId },
     });
 
     if (exercAlreadyAdd)
@@ -56,7 +56,7 @@ export class CreateTreinoExercicio {
     const newTreinoExercicio = await prisma.treinoExercicio.create({
       data: {
         treinoId: dto.treinoId,
-        exercicoId: dto.exercicoId,
+        exercicioId: dto.exercicioId,
         series: dto.series,
         repeticoes: dto.repeticoes,
         carga: dto.carga ?? undefined,
