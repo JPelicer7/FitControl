@@ -293,8 +293,11 @@ export const CreateTreinoDataSchema = z.object({
 export const GetTreinosDataSchema = z.object({
   treinos: z.array(
     z.object({
+      id: z.string(),
       nome: z.string(),
       descricao: z.string().optional(),
+      qtdExercicios: z.number(),
+      qtdAlunos: z.number(),
     }),
   ),
 });
@@ -321,4 +324,19 @@ export const alunoTreinoBodySchema = z.object({
 
 export const alunoTreinoDataSchema = z.object({
   id: z.string(),
+});
+
+// ------------------------ Schema Treino Detalhado ------------------
+export const GetTreinoDetalhadoDataSchema = z.object({
+  nome: z.string(),
+  exercicios: z.array(
+    z.object({
+      series: z.number(),
+      repeticoes: z.string(),
+      carga: z.string().optional(),
+      nomeTreino: z.object({
+        nome: z.string(),
+      }),
+    }),
+  ),
 });

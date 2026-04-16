@@ -8,8 +8,11 @@ interface InputDto {
 
 interface OutputDto {
   treinos: {
+    id: string;
     nome: string;
     descricao?: string;
+    qtdExercicios: number;
+    qtdAlunos: number;
   }[];
 }
 
@@ -24,6 +27,14 @@ export class GetTreinos {
 
     const treinos = await prisma.treino.findMany({
       where: { academiaId: dto.academiaId },
+      include: {
+        _count: {
+          select: {
+            exercicios: true,
+            alunos: true,
+          },
+        },
+      },
     });
     if (!treinos)
       throw new NotFoundError("Não foi possível carregar os treinos.");
@@ -31,8 +42,11 @@ export class GetTreinos {
       throw new NotFoundError("Não há treinos cadastrados.");
 
     const formattedTreinos = treinos.map((tr) => ({
+      id: tr.id,
       nome: tr.nome,
       descricao: tr.descricao ?? undefined,
+      qtdExercicios: tr._count.exercicios,
+      qtdAlunos: tr._count.alunos,
     }));
 
     return { treinos: formattedTreinos };
