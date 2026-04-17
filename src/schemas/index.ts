@@ -273,6 +273,7 @@ export const CreateExercicioDataSchema = z.object({
 export const GetExerciciosDataSchema = z.object({
   exercicios: z.array(
     z.object({
+      id: z.string(),
       nome: z.string(),
       grupoMuscular: z.string().optional(),
       videoUrl: z.string().optional(),
@@ -324,6 +325,15 @@ export const alunoTreinoBodySchema = z.object({
 
 export const alunoTreinoDataSchema = z.object({
   id: z.string(),
+});
+
+export const GetAlunoTreinoDataSchema = z.object({
+  alunos: z.array(
+    z.object({
+      nome: z.string(),
+      Status: z.enum(Status),
+    }),
+  ),
 });
 
 // ------------------------ Schema Treino Detalhado ------------------

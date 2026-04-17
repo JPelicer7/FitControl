@@ -8,6 +8,7 @@ interface InputDto {
 
 interface OutputDto {
   exercicios: {
+    id: string;
     nome: string;
     grupoMuscular?: string;
     videoUrl?: string;
@@ -38,6 +39,7 @@ export class GetExercicios {
       throw new NotFoundError("Não há exercícios cadastrados.");
 
     const formattedExercicios = exercicios.map((ex) => ({
+      id: ex.id,
       nome: ex.nome,
       grupoMuscular: ex.grupoMuscular ?? undefined,
       videoUrl: ex.videoUrl ?? undefined,
