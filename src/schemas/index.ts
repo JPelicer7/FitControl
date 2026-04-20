@@ -303,6 +303,10 @@ export const GetTreinosDataSchema = z.object({
   ),
 });
 
+export const DeleteTreinoDataSchema = z.object({
+  message: z.string(),
+});
+
 // ----------------------- Schema Treino Exercicio ---------
 
 export const CreateTreinoExercBodySchema = z.object({
@@ -351,6 +355,10 @@ export const GetAlunoTreinoDataSchema = z.object({
       Status: z.enum(Status),
     }),
   ),
+});
+
+export const DeleteAlunoTreinoDataSchema = z.object({
+  message: z.string(),
 });
 
 // ------------------------ Schema Treino Detalhado ------------------
