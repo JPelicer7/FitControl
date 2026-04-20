@@ -10,6 +10,7 @@ interface InputDto {
 interface OutputDto {
   nome: string;
   exercicios: {
+    id: string;
     series: number;
     repeticoes: string;
     carga?: string;
@@ -48,6 +49,7 @@ export class GetTreinoDetalhado {
     return {
       nome: treino.nome,
       exercicios: treino.exercicios.map((ex) => ({
+        id: ex.id,
         series: ex.series,
         repeticoes: ex.repeticoes,
         carga: ex.carga ?? undefined,

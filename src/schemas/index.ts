@@ -317,6 +317,22 @@ export const CreateTreinoExercDataSchema = z.object({
   id: z.string(),
 });
 
+export const UpdateTreinoExercicioBodySchema = z.object({
+  series: z.number().optional(),
+  carga: z.string().optional(),
+  repeticoes: z.string().optional(),
+});
+
+export const UpdateTreinoExercicioDataSchema = z.object({
+  series: z.number(),
+  carga: z.string().nullable(),
+  repeticoes: z.string(),
+});
+
+export const DeleteTreinoExercicioDataSchema = z.object({
+  message: z.string(),
+});
+
 //  ----------------------------- Schema AlunoTreino-------------------
 
 export const alunoTreinoBodySchema = z.object({
@@ -330,6 +346,7 @@ export const alunoTreinoDataSchema = z.object({
 export const GetAlunoTreinoDataSchema = z.object({
   alunos: z.array(
     z.object({
+      id: z.string(),
       nome: z.string(),
       Status: z.enum(Status),
     }),
@@ -341,6 +358,7 @@ export const GetTreinoDetalhadoDataSchema = z.object({
   nome: z.string(),
   exercicios: z.array(
     z.object({
+      id: z.string(),
       series: z.number(),
       repeticoes: z.string(),
       carga: z.string().optional(),

@@ -10,7 +10,7 @@ interface InputDto {
 
 interface OutputDto {
   alunos: {
-    //userId: string;
+    id: string;
     nome: string;
     Status: Status;
   }[];
@@ -32,6 +32,7 @@ export class GetAlunosTreino {
       include: {
         user: {
           select: {
+            id: true,
             name: true,
             Status: true,
           },
@@ -43,6 +44,7 @@ export class GetAlunosTreino {
       throw new NotFoundError("Não foi possível encontrar os alunos.");
 
     const formattedAlunos = alunosVinculados.map((al) => ({
+      id: al.user.id,
       nome: al.user.name,
       Status: al.user.Status,
     }));
