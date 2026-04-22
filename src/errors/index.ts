@@ -46,3 +46,10 @@ export class VinculoExists extends Error {
     this.name = "VinculoExists";
   }
 }
+
+export class DataReservada extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "DataReservada";
+  }
+}

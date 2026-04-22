@@ -33,6 +33,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  agenda        Agenda[]
 
   @@unique([email])
   @@map("user")
@@ -46,6 +47,7 @@ model Academia {
   usuarios         User[]
   financeiros      Financeiro[]
   fechamentoMensal FechamentoMensal[]
+  agenda           Agenda[]
 }
 
 model Financeiro {
@@ -164,7 +166,7 @@ model Exercicio {
   nome             String
   grupoMuscular    String?
   videoUrl         String?
-  academiaId String?
+  academiaId       String?
   treinoExercicios TreinoExercicio[]
 
   @@unique([nome, academiaId])
@@ -184,13 +186,13 @@ model Treino {
 }
 
 model TreinoExercicio {
-  id         String  @id @default(uuid())
-  treinoId   String
+  id          String  @id @default(uuid())
+  treinoId    String
   exercicioId String
-  series     Int
-  repeticoes String
-  carga      String?
-  ordem      Int?
+  series      Int
+  repeticoes  String
+  carga       String?
+  ordem       Int?
 
   treino    Treino    @relation(fields: [treinoId], references: [id], onDelete: Cascade)
   exercicio Exercicio @relation(fields: [exercicioId], references: [id], onDelete: Cascade)
@@ -205,6 +207,30 @@ model AlunoTreino {
   treino Treino @relation(fields: [treinoId], references: [id], onDelete: Cascade)
 
   @@unique([userId, treinoId])
+}
+
+model Agenda {
+  id         String          @id @default(uuid())
+  academiaId String
+  titulo     String
+  data       DateTime
+  duracao    Int?
+  observacao String?
+  categoria  AgendaCategoria
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  academia Academia @relation(fields: [academiaId], references: [id], onDelete: Cascade)
+
+  @@index([academiaId, data])
+}
+
+enum AgendaCategoria {
+  Reuniao
+  Personal
+  Avaliacao
+  Outro
 }
 
 model Session {

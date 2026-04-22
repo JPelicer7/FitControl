@@ -1,6 +1,7 @@
 import z from "zod";
 
 import {
+  AgendaCategoria,
   Categoria,
   Plano,
   Role,
@@ -375,4 +376,56 @@ export const GetTreinoDetalhadoDataSchema = z.object({
       }),
     }),
   ),
+});
+
+// ------------------------------ Schema Agenda -------------------
+export const CreateAgendamentoBodySchema = z.object({
+  userId: z.string().optional(),
+  titulo: z.string(),
+  data: z.coerce.date(),
+  duracao: z.number().optional(),
+  observacao: z.string().optional(),
+  categoria: z.enum(AgendaCategoria),
+});
+
+export const CreateAgendamentoDataSchema = z.object({
+  id: z.string(),
+  titulo: z.string(),
+});
+
+export const GetAgendamentosDiaDataSchema = z.object({
+  agendamentos: z.array(
+    z.object({
+      id: z.string(),
+      titulo: z.string(),
+      duracao: z.number().nullable(),
+      observacao: z.string().nullable(),
+      categoria: z.enum(AgendaCategoria),
+      data: z.string(),
+      aluno: z.union([
+        z.object({
+          userId: z.string(),
+          nome: z.string(),
+        }),
+        z.null(),
+      ]),
+    }),
+  ),
+});
+
+export const deleteAgendamentoDataSchema = z.object({
+  message: z.string(),
+});
+
+export const UpdateAgendamentoDataSchema = z.object({
+  message: z.string(),
+});
+
+export const UpdateAgendamentoBodySchema = z.object({
+  titulo: z.string().optional(),
+  duracao: z.number().optional(),
+  observacao: z.string().optional(),
+  userId: z.string().optional(),
+  data: z.string().optional(),
+  categoria: z.enum(AgendaCategoria).optional(),
 });
