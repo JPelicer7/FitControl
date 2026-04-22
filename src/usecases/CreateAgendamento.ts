@@ -1,8 +1,4 @@
-import {
-  DataReservada,
-  ForbiddenError,
-  NotFoundError,
-} from "../errors/index.js";
+import { ForbiddenError, NotFoundError } from "../errors/index.js";
 import { AgendaCategoria } from "../generated/prisma/enums.js";
 import { prisma } from "../lib/db.js";
 
@@ -38,14 +34,6 @@ export class CreateAgendamento {
       });
       if (!aluno) throw new NotFoundError("Aluno não encontrado.");
     }
-
-    const agendamentoExists = await prisma.agenda.findFirst({
-      where: { data: dto.data, academiaId: dto.academiaId },
-    });
-    if (agendamentoExists)
-      throw new DataReservada(
-        "Você já tem um compromisso marcado nesse mesmo dia e horário.",
-      );
 
     const agendamento = await prisma.agenda.create({
       data: {

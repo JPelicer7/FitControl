@@ -24,6 +24,13 @@ export class UpdateAgendamentos {
     });
     if (!agendamento) throw new NotFoundError("Compromisso não encontrado.");
 
+    if (dto.userId) {
+      const aluno = await prisma.user.findUnique({
+        where: { id: dto.userId, academiaId: dto.academiaId },
+      });
+      if (!aluno) throw new NotFoundError("Usuário nao encontrado.");
+    }
+
     const updateAgendamento = await prisma.agenda.update({
       where: { id: dto.agendamentoId },
       data: {

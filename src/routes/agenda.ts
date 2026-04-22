@@ -288,6 +288,12 @@ export const agendaRoutes = async (app: FastifyInstance) => {
         const result = await updateAgendamentos.execute({
           academiaId: session.user.academiaId,
           agendamentoId: request.params.agendamentoId,
+          titulo: request.body.titulo,
+          observacao: request.body.observacao,
+          duracao: request.body.duracao,
+          data: request.body.data,
+          userId: request.body.userId,
+          categoria: request.body.categoria,
         });
 
         return reply.status(201).send(result);
