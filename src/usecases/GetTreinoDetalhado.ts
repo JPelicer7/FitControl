@@ -9,6 +9,7 @@ interface InputDto {
 
 interface OutputDto {
   nome: string;
+  totalSeries: number;
   exercicios: {
     id: string;
     series: number;
@@ -46,8 +47,14 @@ export class GetTreinoDetalhado {
 
     if (!treino) throw new NotFoundError("Treino inexistente.");
 
+    const totalSeries = treino.exercicios.reduce(
+      (acc, ex) => acc + ex.series,
+      0,
+    );
+
     return {
       nome: treino.nome,
+      totalSeries,
       exercicios: treino.exercicios.map((ex) => ({
         id: ex.id,
         series: ex.series,

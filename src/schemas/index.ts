@@ -365,6 +365,7 @@ export const DeleteAlunoTreinoDataSchema = z.object({
 // ------------------------ Schema Treino Detalhado ------------------
 export const GetTreinoDetalhadoDataSchema = z.object({
   nome: z.string(),
+  totalSeries: z.number(),
   exercicios: z.array(
     z.object({
       id: z.string(),
