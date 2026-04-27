@@ -430,3 +430,31 @@ export const UpdateAgendamentoBodySchema = z.object({
   data: z.string().optional(),
   categoria: z.enum(AgendaCategoria).optional(),
 });
+
+// ---------------------- Dashboard ----------
+
+export const GetDashboardDataSchema = z.object({
+  alunos: z.object({
+    ativos: z.number(),
+    total: z.number(),
+  }),
+  financeiro: z.object({
+    receitaTotal: z.number(),
+    despesaTotal: z.number(),
+  }),
+  agendamentosDia: z.array(
+    z.object({
+      id: z.string(),
+      titulo: z.string(),
+      data: z.string(),
+      categoria: z.enum(AgendaCategoria),
+    }),
+  ),
+  ultimosAlunos: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      plano: z.enum(Plano),
+    }),
+  ),
+});

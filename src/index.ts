@@ -17,6 +17,7 @@ import z from "zod";
 import { auth } from "./lib/auth.js";
 import { agendaRoutes } from "./routes/agenda.js";
 import { alunoTreinoRoutes } from "./routes/alunoTreino.js";
+import { dashboardRoutes } from "./routes/dashboard.js";
 import { exercicioRoutes } from "./routes/exercicio.js";
 import { financeiroRoutes } from "./routes/financeiro.js";
 import { medidasRouter } from "./routes/medidas.js";
@@ -112,6 +113,7 @@ await app.register(treinoRoutes, { prefix: "/treino" });
 await app.register(treinoExercRoutes, { prefix: "/treinoExerc" });
 await app.register(alunoTreinoRoutes, { prefix: "/alunoTreino" });
 await app.register(agendaRoutes, { prefix: "/agenda" });
+await app.register(dashboardRoutes, { prefix: "/dashboard" });
 // Register authentication endpoint
 app.route({
   method: ["GET", "POST"],
