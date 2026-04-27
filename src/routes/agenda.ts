@@ -140,8 +140,8 @@ export const agendaRoutes = async (app: FastifyInstance) => {
           });
         }
 
-        const data = new Date(request.query.data);
-        if (isNaN(data.getTime())) {
+        const dataStr = request.query.data;
+        if (!dataStr || !/^\d{4}-\d{2}-\d{2}$/.test(dataStr)) {
           return reply
             .status(400)
             .send({ error: "Data inválida.", code: "INVALID_DATE" });
@@ -150,7 +150,7 @@ export const agendaRoutes = async (app: FastifyInstance) => {
         const getAgendamentos = new GetAgendamentos();
         const result = await getAgendamentos.execute({
           academiaId: session.user.academiaId,
-          data,
+          data: dataStr,
         });
 
         return reply.status(201).send(result);

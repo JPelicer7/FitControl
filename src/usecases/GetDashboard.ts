@@ -6,7 +6,7 @@ interface InputDto {
   donoId: string;
   academiaId: string;
   fechado: boolean;
-  data: Date;
+  data: string;
 }
 
 interface OutputDto {
@@ -41,11 +41,8 @@ export class GetDashboard {
       throw new ForbiddenError("Acesso negado: permissões insuficientes.");
     }
 
-    const inicioDia = new Date(dto.data);
-    inicioDia.setUTCHours(0, 0, 0, 0);
-
-    const fimDia = new Date(dto.data);
-    fimDia.setUTCHours(23, 59, 59, 999);
+    const inicioDia = new Date(`${dto.data}T00:00:00-03:00`);
+    const fimDia = new Date(`${dto.data}T23:59:59-03:00`);
 
     const [
       ativos,

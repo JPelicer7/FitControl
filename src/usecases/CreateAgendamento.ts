@@ -7,7 +7,8 @@ interface InputDto {
   academiaId: string;
   userId?: string;
   titulo: string;
-  data: Date;
+  //data: Date;
+  data: string;
   duracao?: number;
   observacao?: string;
   categoria: AgendaCategoria;
@@ -40,7 +41,7 @@ export class CreateAgendamento {
         academiaId: dto.academiaId,
         userId: dto.userId ?? undefined,
         titulo: dto.titulo,
-        data: dto.data,
+        data: new Date(dto.data),
         duracao: dto.duracao ?? undefined,
         observacao: dto.observacao ?? undefined,
         categoria: dto.categoria,

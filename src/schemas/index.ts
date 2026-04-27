@@ -383,7 +383,8 @@ export const GetTreinoDetalhadoDataSchema = z.object({
 export const CreateAgendamentoBodySchema = z.object({
   userId: z.string().optional(),
   titulo: z.string(),
-  data: z.coerce.date(),
+  //data: z.coerce.date(),
+  data: z.string(),
   duracao: z.number().optional(),
   observacao: z.string().optional(),
   categoria: z.enum(AgendaCategoria),

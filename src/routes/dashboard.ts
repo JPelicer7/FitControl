@@ -48,19 +48,20 @@ export const dashboardRoutes = async (app: FastifyInstance) => {
           });
         }
 
-        const data = new Date(request.query.data);
+        const dataStr = request.query.data;
 
-        if (isNaN(data.getTime())) {
+        if (!dataStr || !/^\d{4}-\d{2}-\d{2}$/.test(dataStr)) {
           return reply
             .status(400)
             .send({ error: "Data inválida.", code: "INVALID_DATE" });
         }
+
         const getDashboard = new GetDashboard();
         const result = await getDashboard.execute({
           academiaId: session.user.academiaId,
           donoId: session.user.id,
           fechado: false,
-          data,
+          data: dataStr,
         });
 
         return reply.status(201).send(result);

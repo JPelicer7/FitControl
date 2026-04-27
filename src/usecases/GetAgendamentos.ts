@@ -4,7 +4,7 @@ import { prisma } from "../lib/db.js";
 
 interface InputDto {
   academiaId: string;
-  data: Date;
+  data: string;
 }
 
 interface OutputDto {
@@ -24,11 +24,8 @@ interface OutputDto {
 
 export class GetAgendamentos {
   async execute(dto: InputDto): Promise<OutputDto> {
-    const inicioDia = new Date(dto.data);
-    inicioDia.setUTCHours(0, 0, 0, 0);
-
-    const fimDia = new Date(dto.data);
-    fimDia.setUTCHours(23, 59, 59, 999);
+    const inicioDia = new Date(`${dto.data}T00:00:00-03:00`);
+    const fimDia = new Date(`${dto.data}T23:59:59-03:00`);
 
     const agendamentos = await prisma.agenda.findMany({
       where: {
