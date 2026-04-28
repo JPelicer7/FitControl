@@ -21,11 +21,12 @@ interface OutputDto {
 
 export class CreateAgendamento {
   async execute(dto: InputDto): Promise<OutputDto> {
-    const dono = await prisma.user.findFirst({
-      where: { id: dto.donoId, academiaId: dto.academiaId },
+    const dono = await prisma.user.findUnique({
+      where: { id: dto.donoId },
     });
 
-    if (!dono) throw new NotFoundError("Usuário não encontrado.");
+    if (!dono || dono.academiaId !== dto.academiaId)
+      throw new NotFoundError("Usuário não encontrado.");
     if (dono.role !== "Dono")
       throw new ForbiddenError("Acesso negado: permissões insuficientes.");
 

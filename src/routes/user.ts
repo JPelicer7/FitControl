@@ -41,6 +41,7 @@ export const userRoutes = async (app: FastifyInstance) => {
       response: {
         201: CreateUserDataSchema,
         401: ErrorSchema,
+        403: ErrorSchema,
         404: ErrorSchema,
         409: ErrorSchema,
         500: ErrorSchema,
@@ -74,6 +75,7 @@ export const userRoutes = async (app: FastifyInstance) => {
           Status: request.body.Status,
           telefone: request.body.telefone,
           academiaId: session.user.academiaId,
+          donoId: session.user.id,
         });
         return reply.status(201).send(result);
       } catch (error) {
@@ -91,6 +93,12 @@ export const userRoutes = async (app: FastifyInstance) => {
             error: error.message,
             code: "USER_ALREADY_EXISTS",
           });
+        }
+
+        if (error instanceof ForbiddenError) {
+          return reply
+            .status(403)
+            .send({ error: error.message, code: "FORBIDDEN" });
         }
 
         return reply.status(500).send({
@@ -346,7 +354,6 @@ export const userRoutes = async (app: FastifyInstance) => {
         const result = await getGrafico.execute({
           userId: request.params.userId,
           academiaId: session.user.academiaId,
-          role: parsedRole.data,
           requestId: session.user.id,
         });
 

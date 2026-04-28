@@ -1,8 +1,9 @@
-import { NotFoundError } from "../errors/index.js";
+import { ForbiddenError, NotFoundError } from "../errors/index.js";
 import { prisma } from "../lib/db.js";
 
 interface InputDto {
   academiaId: string;
+  donoId: string;
 }
 
 interface OutputDto {
@@ -18,6 +19,16 @@ interface OutputDto {
 
 export class GetFinanceiroHistory {
   async execute(dto: InputDto): Promise<OutputDto> {
+    const dono = await prisma.user.findUnique({
+      where: { id: dto.donoId },
+    });
+
+    if (!dono || dono.academiaId !== dto.academiaId)
+      throw new NotFoundError("Usuário não encontrado.");
+
+    if (dono.role !== "Dono")
+      throw new ForbiddenError("Acesso negado: permissões insuficientes.");
+
     const historico = await prisma.fechamentoMensal.findMany({
       where: {
         academiaId: dto.academiaId,
@@ -28,7 +39,6 @@ export class GetFinanceiroHistory {
 
     if (!historico)
       throw new NotFoundError("Não foi possível encontrar o histórico.");
-    //lançar erro de historico.lenght === 0
 
     const formattedHistorico = historico.map((h) => ({
       receitaTotal: Number(h.receitaTotal),

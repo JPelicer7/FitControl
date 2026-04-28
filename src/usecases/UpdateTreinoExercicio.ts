@@ -20,9 +20,10 @@ interface OutputDto {
 export class UpdateTreinoExercicio {
   async execute(dto: InputDto): Promise<OutputDto> {
     const dono = await prisma.user.findUnique({
-      where: { id: dto.donoId, academiaId: dto.academiaId },
+      where: { id: dto.donoId },
     });
-    if (!dono) throw new NotFoundError("Não foi possível encontrar o usuário!");
+    if (!dono || dono.academiaId !== dto.academiaId)
+      throw new NotFoundError("Não foi possível encontrar o usuário!");
     if (dono.role !== "Dono")
       throw new ForbiddenError("Acesso negado: permissões insuficientes.");
 

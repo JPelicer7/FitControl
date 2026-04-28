@@ -43,7 +43,7 @@ export class GetUsers {
     }
 
     const page = dto.page && dto.page > 0 ? dto.page : 1;
-    const limit = dto.limit && dto.limit > 0 ? dto.limit : 10;
+    const limit = dto.limit && dto.limit > 0 ? dto.limit : 3;
     const skip = (page - 1) * limit;
 
     const users = await prisma.user.findMany({

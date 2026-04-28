@@ -34,6 +34,7 @@ export const financeiroRoutes = async (app: FastifyInstance) => {
       response: {
         201: CreateTransactionDataSchema,
         401: ErrorSchema,
+        403: ErrorSchema,
         404: ErrorSchema,
         409: ErrorSchema,
         500: ErrorSchema,
@@ -83,7 +84,7 @@ export const financeiroRoutes = async (app: FastifyInstance) => {
         }
 
         if (error instanceof ForbiddenError) {
-          return reply.status(409).send({
+          return reply.status(403).send({
             error: error.message,
             code: "ForbiddenError",
           });
@@ -107,6 +108,7 @@ export const financeiroRoutes = async (app: FastifyInstance) => {
       response: {
         201: GetTransactionsDataSchema,
         401: ErrorSchema,
+        403: ErrorSchema,
         404: ErrorSchema,
         409: ErrorSchema,
         500: ErrorSchema,
@@ -135,6 +137,7 @@ export const financeiroRoutes = async (app: FastifyInstance) => {
         const result = await getTransactions.execute({
           academiaId: session.user.academiaId,
           fechado: false,
+          donoId: session.user.id,
         });
 
         return reply.status(201).send(result);
@@ -145,6 +148,13 @@ export const financeiroRoutes = async (app: FastifyInstance) => {
           return reply.status(404).send({
             error: error.message,
             code: "NOT_FOUND",
+          });
+        }
+
+        if (error instanceof ForbiddenError) {
+          return reply.status(403).send({
+            error: error.message,
+            code: "ForbbidenError",
           });
         }
 
@@ -201,7 +211,7 @@ export const financeiroRoutes = async (app: FastifyInstance) => {
         const fechaMes = new FechaMes();
         const result = await fechaMes.execute({
           academiaId: session.user.academiaId,
-          userId: session.user.id,
+          donoId: session.user.id,
           fechado: false,
         });
 
@@ -248,6 +258,7 @@ export const financeiroRoutes = async (app: FastifyInstance) => {
       response: {
         201: GetFinanceiroHistoryDataSchema,
         401: ErrorSchema,
+        403: ErrorSchema,
         404: ErrorSchema,
         405: ErrorSchema,
         409: ErrorSchema,
@@ -276,6 +287,7 @@ export const financeiroRoutes = async (app: FastifyInstance) => {
         const historico = new GetFinanceiroHistory();
         const result = await historico.execute({
           academiaId: session.user.academiaId,
+          donoId: session.user.id,
         });
 
         return reply.status(201).send(result);
@@ -286,6 +298,13 @@ export const financeiroRoutes = async (app: FastifyInstance) => {
           return reply.status(404).send({
             error: error.message,
             code: "NOT_FOUND",
+          });
+        }
+
+        if (error instanceof ForbiddenError) {
+          return reply.status(403).send({
+            error: error.message,
+            code: "ForbiddenError",
           });
         }
 

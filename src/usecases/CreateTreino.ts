@@ -15,9 +15,10 @@ interface OutputDto {
 export class CreateTreino {
   async execute(dto: InputDto): Promise<OutputDto> {
     const user = await prisma.user.findUnique({
-      where: { id: dto.criadoPorId, academiaId: dto.academiaId },
+      where: { id: dto.criadoPorId },
     });
-    if (!user) throw new NotFoundError("Usuário não cadastrado.");
+    if (!user || user.academiaId !== dto.academiaId)
+      throw new NotFoundError("Usuário não cadastrado.");
 
     if (user.role !== "Dono") {
       throw new ForbiddenError("Acesso negado: permissões insuficientes.");

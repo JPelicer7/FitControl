@@ -1,5 +1,6 @@
 import {
   FechamentoAlreadyExists,
+  ForbiddenError,
   NotExistTransactions,
   NotFoundError,
 } from "../errors/index.js";
@@ -8,7 +9,7 @@ import { prisma } from "../lib/db.js";
 
 interface InputDto {
   academiaId: string;
-  userId: string;
+  donoId: string;
   fechado: boolean;
 }
 
@@ -21,6 +22,16 @@ export class FechaMes {
     const agora = new Date();
     const mesAtual = agora.getMonth() + 1;
     const anoAtual = agora.getFullYear();
+
+    const dono = await prisma.user.findUnique({
+      where: { id: dto.donoId },
+    });
+
+    if (!dono || dono.academiaId !== dto.academiaId)
+      throw new NotFoundError("Usuário não encontrado.");
+
+    if (dono.role !== "Dono")
+      throw new ForbiddenError("Acesso negado: permissões insuficientes.");
 
     const fechamentoExistente = await prisma.fechamentoMensal.findUnique({
       where: {
@@ -101,7 +112,7 @@ export class FechaMes {
           receitaTotal: new Prisma.Decimal(receitaTotal),
           despesaTotal: new Prisma.Decimal(despesaTotal),
           lucroLiquido: new Prisma.Decimal(lucroLiquido),
-          fechadoPor: dto.userId,
+          fechadoPor: dto.donoId,
         },
       });
 

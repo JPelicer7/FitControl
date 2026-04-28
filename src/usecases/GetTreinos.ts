@@ -19,11 +19,13 @@ interface OutputDto {
 export class GetTreinos {
   async execute(dto: InputDto): Promise<OutputDto> {
     const user = await prisma.user.findUnique({
-      where: { id: dto.userId, academiaId: dto.academiaId },
+      where: { id: dto.userId },
     });
-    if (!user) throw new NotFoundError("Usuário não encontrado.");
+    if (!user || user.academiaId !== dto.academiaId)
+      throw new NotFoundError("Usuário não encontrado.");
 
-    if (user.role !== "Dono") throw new ForbiddenError("Sem autorização.");
+    if (user.role !== "Dono")
+      throw new ForbiddenError("Acesso Negado: Permissão insuficiente.");
 
     const treinos = await prisma.treino.findMany({
       where: { academiaId: dto.academiaId },

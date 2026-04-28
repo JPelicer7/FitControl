@@ -23,13 +23,13 @@ interface OutputDto {
 export class CreateTransaction {
   async execute(dto: InputDto): Promise<OutputDto> {
     const user = await prisma.user.findUnique({
-      where: { id: dto.userId, academiaId: dto.academiaId },
+      where: { id: dto.userId },
     });
-    if (!user) throw new NotFoundError("Usuário não encontrado.");
 
-    if (user.role !== "Dono") {
+    if (!user || user.academiaId !== dto.academiaId)
+      throw new NotFoundError("Usuário não encontrado.");
+    if (user.role !== "Dono")
       throw new ForbiddenError("Acesso negado: permissões insuficientes.");
-    }
 
     const newTransaction = await prisma.financeiro.create({
       data: dto,

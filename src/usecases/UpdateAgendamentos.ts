@@ -1,8 +1,9 @@
-import { NotFoundError } from "../errors/index.js";
+import { ForbiddenError, NotFoundError } from "../errors/index.js";
 import { AgendaCategoria } from "../generated/prisma/enums.js";
 import { prisma } from "../lib/db.js";
 
 interface InputDto {
+  donoId: string;
   academiaId: string;
   agendamentoId: string;
   titulo?: string;
@@ -19,6 +20,16 @@ interface OutputDto {
 
 export class UpdateAgendamentos {
   async execute(dto: InputDto): Promise<OutputDto> {
+    const dono = await prisma.user.findUnique({
+      where: { id: dto.donoId },
+    });
+
+    if (!dono || dono.academiaId !== dto.academiaId)
+      throw new NotFoundError("Usuário não encontrado.");
+
+    if (dono.role !== "Dono")
+      throw new ForbiddenError("Acesso negado: Permissões Insuficientes.");
+
     const agendamento = await prisma.agenda.findFirst({
       where: { id: dto.agendamentoId, academiaId: dto.academiaId },
     });

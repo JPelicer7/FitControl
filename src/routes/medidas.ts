@@ -3,7 +3,7 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 
-import { NotFoundError } from "../errors/index.js";
+import { ForbiddenError, NotFoundError } from "../errors/index.js";
 //import { NotFoundError } from "../erros/index.js";
 import { auth } from "../lib/auth.js";
 import {
@@ -30,6 +30,7 @@ export const medidasRouter = async (app: FastifyInstance) => {
       body: CreateMedidasBodySchema,
       response: {
         201: CreateMedidasDataSchema,
+        403: ErrorSchema,
         401: ErrorSchema,
         404: ErrorSchema,
         500: ErrorSchema,
@@ -59,15 +60,24 @@ export const medidasRouter = async (app: FastifyInstance) => {
           ...request.body,
           userId: request.params.userId,
           academiaId: session.user.academiaId,
+          donoId: session.user.id,
         });
 
         return reply.status(201).send(result);
       } catch (error) {
         app.log.error(error);
+
         if (error instanceof NotFoundError) {
           return reply.status(404).send({
             error: error.message,
             code: "NOT_FOUND",
+          });
+        }
+
+        if (error instanceof ForbiddenError) {
+          return reply.status(403).send({
+            error: error.message,
+            code: "ForbiddenError",
           });
         }
 
@@ -94,6 +104,7 @@ export const medidasRouter = async (app: FastifyInstance) => {
       response: {
         201: updateMedidasDataSchema,
         401: ErrorSchema,
+        403: ErrorSchema,
         404: ErrorSchema,
         500: ErrorSchema,
       },
@@ -123,6 +134,7 @@ export const medidasRouter = async (app: FastifyInstance) => {
           academiaId: session.user.academiaId,
           userId: request.params.userId,
           medidaId: request.params.medidaId,
+          donoId: session.user.id,
         });
 
         return reply.status(201).send(result);
@@ -132,6 +144,13 @@ export const medidasRouter = async (app: FastifyInstance) => {
           return reply.status(404).send({
             error: error.message,
             code: "NOT_FOUND",
+          });
+        }
+
+        if (error instanceof ForbiddenError) {
+          return reply.status(403).send({
+            error: error.message,
+            code: "ForbiddenError",
           });
         }
 

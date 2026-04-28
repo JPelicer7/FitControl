@@ -1,9 +1,9 @@
-import { NotFoundError } from "../errors/index.js";
+import { ForbiddenError, NotFoundError } from "../errors/index.js";
 import { Categoria, Type } from "../generated/prisma/client.js";
 import { prisma } from "../lib/db.js";
 
 interface InputDto {
-  // userId: string
+  donoId: string;
   academiaId: string;
   fechado: boolean;
 }
@@ -27,6 +27,15 @@ interface OutputDto {
 
 export class GetTransactions {
   async execute(dto: InputDto): Promise<OutputDto> {
+    const dono = await prisma.user.findUnique({
+      where: { id: dto.donoId },
+    });
+
+    if (!dono || dono.academiaId !== dto.academiaId)
+      throw new NotFoundError("Usuário não encontrado.");
+    if (dono.role !== "Dono")
+      throw new ForbiddenError("Acesso negado: Permissões insuficientes");
+
     const transactions = await prisma.financeiro.findMany({
       where: { academiaId: dto.academiaId, fechado: dto.fechado },
       orderBy: { data_pagamento: "desc" },

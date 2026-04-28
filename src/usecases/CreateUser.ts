@@ -1,4 +1,8 @@
-import { NotFoundError, UserAlreadyExists } from "../errors/index.js";
+import {
+  ForbiddenError,
+  NotFoundError,
+  UserAlreadyExists,
+} from "../errors/index.js";
 import { Plano } from "../generated/prisma/enums.js";
 import { Role } from "../generated/prisma/enums.js";
 import { Status } from "../generated/prisma/enums.js";
@@ -6,6 +10,7 @@ import { auth } from "../lib/auth.js";
 import { prisma } from "../lib/db.js";
 
 interface InputDto {
+  donoId: string;
   name: string;
   email: string;
   password: string;
@@ -23,6 +28,16 @@ interface OutputDto {
 
 export class CreateUser {
   async execute(dto: InputDto): Promise<OutputDto> {
+    const dono = await prisma.user.findUnique({
+      where: { id: dto.donoId },
+    });
+
+    if (!dono || dono.academiaId !== dto.academiaId)
+      throw new NotFoundError("Usuário não encontrado.");
+
+    if (dono.role !== "Dono")
+      throw new ForbiddenError("Acesso negado: Permissões insuficientes.");
+
     const userExists = await prisma.user.findUnique({
       where: { email: dto.email },
     });

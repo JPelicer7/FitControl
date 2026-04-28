@@ -219,6 +219,7 @@ export const agendaRoutes = async (app: FastifyInstance) => {
         const result = await deleteAgendamento.execute({
           academiaId: session.user.academiaId,
           agendamentoId: request.params.agendamentoId,
+          donoId: session.user.id,
         });
 
         return reply.status(200).send(result);
@@ -287,6 +288,7 @@ export const agendaRoutes = async (app: FastifyInstance) => {
         const updateAgendamentos = new UpdateAgendamentos();
         const result = await updateAgendamentos.execute({
           academiaId: session.user.academiaId,
+          donoId: session.user.id,
           agendamentoId: request.params.agendamentoId,
           titulo: request.body.titulo,
           observacao: request.body.observacao,

@@ -23,7 +23,8 @@ export class CreateExercicio {
       where: { id: dto.userId },
     });
 
-    if (!user) throw new NotFoundError("Usuário não encontrado.");
+    if (!user || user.academiaId !== dto.academiaId)
+      throw new NotFoundError("Usuário não encontrado.");
 
     if (user.role !== "Dono") {
       throw new ForbiddenError("Acesso negado: permissões insuficientes.");

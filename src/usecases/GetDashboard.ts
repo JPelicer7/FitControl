@@ -33,10 +33,11 @@ interface OutputDto {
 
 export class GetDashboard {
   async execute(dto: InputDto): Promise<OutputDto> {
-    const user = await prisma.user.findFirst({
-      where: { id: dto.donoId, academiaId: dto.academiaId },
+    const user = await prisma.user.findUnique({
+      where: { id: dto.donoId },
     });
-    if (!user) throw new NotFoundError("Usuário não encontrado.");
+    if (!user || user.academiaId !== dto.academiaId)
+      throw new NotFoundError("Usuário não encontrado.");
     if (user.role !== "Dono") {
       throw new ForbiddenError("Acesso negado: permissões insuficientes.");
     }

@@ -1,9 +1,10 @@
-import { NotFoundError } from "../errors/index.js";
+import { ForbiddenError, NotFoundError } from "../errors/index.js";
 import { prisma } from "../lib/db.js";
 
 interface InputDto {
   academiaId: string;
   userId: string;
+  donoId: string;
   medidaId: string;
   idade?: number;
   peso?: number;
@@ -41,14 +42,25 @@ interface OutputDto {
 
 export class UpdateMedidas {
   async execute(dto: InputDto): Promise<OutputDto> {
-    const user = await prisma.user.findUnique({
-      where: { id: dto.userId, academiaId: dto.academiaId },
+    const dono = await prisma.user.findUnique({
+      where: { id: dto.donoId },
     });
 
-    if (!user) throw new NotFoundError("Não foi possível encontrar o usuário!");
+    if (!dono || dono.academiaId !== dto.academiaId)
+      throw new NotFoundError("Usuário não encontrado.");
+
+    if (dono.role !== "Dono")
+      throw new ForbiddenError("Acesso negado: Permissões Insuficientes.");
+
+    const user = await prisma.user.findUnique({
+      where: { id: dto.userId },
+    });
+
+    if (!user || user.academiaId !== dto.academiaId)
+      throw new NotFoundError("Não foi possível encontrar o usuário!");
 
     //const { ...dataToUpdate } = dto;
-    const { academiaId, userId, medidaId, ...dataToUpdate } = dto;
+    const { academiaId, userId, medidaId, donoId, ...dataToUpdate } = dto;
 
     await prisma.medidas.update({
       where: {
