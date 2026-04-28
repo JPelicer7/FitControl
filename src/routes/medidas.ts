@@ -10,10 +10,12 @@ import {
   CreateMedidasBodySchema,
   CreateMedidasDataSchema,
   ErrorSchema,
+  GetHistoricoMedidasDataSchema,
   updateMedidasBodySchema,
   updateMedidasDataSchema,
 } from "../schemas/index.js";
 import { CreateMedidas } from "../usecases/CreateMedidas.js";
+import { GetHistoricoMedidas } from "../usecases/GetHistoricoMedidas.js";
 import { UpdateMedidas } from "../usecases/UpdateMedidas.js";
 
 export const medidasRouter = async (app: FastifyInstance) => {
@@ -152,6 +154,67 @@ export const medidasRouter = async (app: FastifyInstance) => {
             error: error.message,
             code: "ForbiddenError",
           });
+        }
+
+        return reply.status(500).send({
+          error: "Internal server error",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  });
+
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "GET",
+    url: "/:userId/historico",
+    schema: {
+      operationId: "getHistoricoMedidas",
+      tags: ["Medidas"],
+      summary: "Get histórico de medidas de um aluno",
+      params: z.object({
+        userId: z.string(),
+      }),
+      response: {
+        201: GetHistoricoMedidasDataSchema,
+        401: ErrorSchema,
+        403: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      try {
+        const session = await auth.api.getSession({
+          headers: fromNodeHeaders(request.headers),
+        });
+
+        if (!session) {
+          return reply.status(401).send({
+            error: "Unauthorized",
+            code: "UNAUTHORIZED",
+          });
+        }
+
+        const getHistoricoMedidas = new GetHistoricoMedidas();
+        const result = await getHistoricoMedidas.execute({
+          academiaId: session.user.academiaId,
+          userId: request.params.userId,
+          requestId: session.user.id,
+        });
+
+        return reply.status(201).send(result);
+      } catch (error) {
+        app.log.error(error);
+
+        if (error instanceof NotFoundError) {
+          return reply
+            .status(404)
+            .send({ error: error.message, code: "NOT_FOUND" });
+        }
+        if (error instanceof ForbiddenError) {
+          return reply
+            .status(403)
+            .send({ error: error.message, code: "FORBIDDEN" });
         }
 
         return reply.status(500).send({

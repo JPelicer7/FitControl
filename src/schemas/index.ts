@@ -120,6 +120,7 @@ export const GetUserDataSchema = z.object({
   }),
 });
 
+// -------------------------- Schema Medidas ---------------------
 export const CreateMedidasBodySchema = z.object({
   idade: z.number(),
   peso: z.number(),
@@ -185,6 +186,28 @@ export const updateMedidasBodySchema = z.object({
   percentual_gordura: z.number().optional(),
   massa_magra: z.number().optional(),
   massa_gorda: z.number().optional(),
+});
+
+export const GetHistoricoMedidasDataSchema = z.object({
+  historico: z.array(
+    z.object({
+      id: z.string(),
+      createdAt: z.string(),
+      peso: z.number(),
+      torax: z.number().nullable(),
+      cintura: z.number().nullable(),
+      quadril: z.number().nullable(),
+      braco_contrai_direi: z.number().nullable(),
+      braco_contrai_esq: z.number().nullable(),
+      coxa_dir: z.number().nullable(),
+      coxa_esq: z.number().nullable(),
+      panturrilha_dir: z.number().nullable(),
+      panturrilha_esq: z.number().nullable(),
+      percentual_gordura: z.number().nullable(),
+      massaGorda: z.number().nullable(),
+      massaMagra: z.number().nullable(),
+    }),
+  ),
 });
 
 export const updateMedidasDataSchema = z.object({
@@ -360,6 +383,26 @@ export const GetAlunoTreinoDataSchema = z.object({
 
 export const DeleteAlunoTreinoDataSchema = z.object({
   message: z.string(),
+});
+
+export const GetMeusTreinosDataSchema = z.object({
+  treinos: z.array(
+    z.object({
+      id: z.string(),
+      nome: z.string(),
+      descricao: z.string().nullable(),
+      exercicios: z.array(
+        z.object({
+          id: z.string(),
+          series: z.number(),
+          repeticoes: z.string(),
+          carga: z.string().nullable(),
+          nome: z.string(),
+          grupoMuscular: z.string().nullable(),
+        }),
+      ),
+    }),
+  ),
 });
 
 // ------------------------ Schema Treino Detalhado ------------------
