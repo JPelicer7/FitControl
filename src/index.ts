@@ -1,6 +1,8 @@
 import "dotenv/config";
 
+import fastifyCookie from "@fastify/cookie";
 import fastifyCors from "@fastify/cors";
+import rateLimit from "@fastify/rate-limit";
 import fastifySwagger from "@fastify/swagger";
 //import fastifySwaggerUI from "@fastify/swagger-ui";
 import fastifyApiReference from "@scalar/fastify-api-reference";
@@ -71,6 +73,24 @@ await app.register(fastifyCors, {
   credentials: true,
 });
 
+await app.register(fastifyCookie);
+
+// Rate limiting global
+
+await app.register(rateLimit, {
+  global: true,
+  max: 100,
+  timeWindow: "1 minute",
+  keyGenerator: (request) => {
+    const sessionToken = request.cookies?.["better-auth.session_token"];
+    return sessionToken ?? request.ip;
+  },
+  errorResponseBuilder: () => ({
+    error: "Muitas requisições. Tente novamente em instantes.",
+    code: "RATE_LIMIT_EXCEEDED",
+  }),
+});
+
 await app.register(fastifyApiReference, {
   routePrefix: "/docs",
   configuration: {
@@ -114,6 +134,42 @@ await app.register(treinoExercRoutes, { prefix: "/treinoExerc" });
 await app.register(alunoTreinoRoutes, { prefix: "/alunoTreino" });
 await app.register(agendaRoutes, { prefix: "/agenda" });
 await app.register(dashboardRoutes, { prefix: "/dashboard" });
+
+app.route({
+  method: "POST",
+  url: "/api/auth/sign-in/email",
+  schema: { hide: true },
+  config: {
+    rateLimit: {
+      max: 10,
+      timeWindow: "5 minutes",
+    },
+  },
+  async handler(request, reply) {
+    try {
+      const url = new URL(request.url, `http://${request.headers.host}`);
+      const headers = new Headers();
+      Object.entries(request.headers).forEach(([key, value]) => {
+        if (value) headers.append(key, value.toString());
+      });
+      const req = new Request(url.toString(), {
+        method: request.method,
+        headers,
+        ...(request.body ? { body: JSON.stringify(request.body) } : {}),
+      });
+      const response = await auth.handler(req);
+      reply.status(response.status);
+      response.headers.forEach((value, key) => reply.header(key, value));
+      reply.send(response.body ? await response.text() : null);
+    } catch (error) {
+      app.log.error(error);
+      reply
+        .status(500)
+        .send({ error: "Internal authentication error", code: "AUTH_FAILURE" });
+    }
+  },
+});
+
 // Register authentication endpoint
 app.route({
   method: ["GET", "POST"],
