@@ -27,8 +27,41 @@ import { treinoRoutes } from "./routes/treino.js";
 import { treinoExercRoutes } from "./routes/treinoExercicio.js";
 import { userRoutes } from "./routes/user.js";
 
+// const app = Fastify({
+//   logger: true,
+// });
+
+const isProd = process.env.NODE_ENV === "production";
 const app = Fastify({
-  logger: true,
+  logger: isProd
+    ? {
+        level: "warn",
+        serializers: {
+          req(request) {
+            return {
+              method: request.method,
+              url: request.url,
+              remoteAddress: request.ip,
+            };
+          },
+          res(reply) {
+            return {
+              statusCode: reply.statusCode,
+            };
+          },
+        },
+      }
+    : {
+        level: "info", // em desenvolvimento loga tudo
+        transport: {
+          target: "pino-pretty", // output legível no terminal
+          options: {
+            colorize: true,
+            translateTime: "HH:MM:ss",
+            ignore: "pid,hostname",
+          },
+        },
+      },
 });
 
 app.setValidatorCompiler(validatorCompiler);
