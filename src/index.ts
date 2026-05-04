@@ -17,6 +17,7 @@ import {
 import z from "zod";
 
 import { auth } from "./lib/auth.js";
+import { env } from "./lib/env.js";
 import { agendaRoutes } from "./routes/agenda.js";
 import { alunoTreinoRoutes } from "./routes/alunoTreino.js";
 import { dashboardRoutes } from "./routes/dashboard.js";
@@ -92,8 +93,8 @@ await app.register(fastifySwagger, {
     },
     servers: [
       {
-        description: "LocalHost",
-        url: "http://localhost:8080",
+        description: "Api Base URL",
+        url: env.API_BASE_URL,
       },
     ],
   },
@@ -102,7 +103,7 @@ await app.register(fastifySwagger, {
 
 //para pegar dados do frontEnd
 await app.register(fastifyCors, {
-  origin: ["http://localhost:3000"],
+  origin: [env.WEB_APP_BASE_URL],
   credentials: true,
 });
 
