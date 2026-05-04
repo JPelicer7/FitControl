@@ -246,7 +246,9 @@ app.route({
 
 // Run the server!
 try {
-  await app.listen({ port: Number(process.env.PORT || 8080) });
+  await app.listen({
+    port: Number({ host: "0.0.0.0", port: process.env.PORT || 8080 }),
+  });
 } catch (err) {
   app.log.error(err);
   process.exit(1);
