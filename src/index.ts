@@ -244,10 +244,20 @@ app.route({
   },
 });
 
-// Run the server!
+// // Run the server!
+// try {
+//   await app.listen({
+//     port: Number({ host: "0.0.0.0", port: env.PORT }),
+//   });
+// } catch (err) {
+//   app.log.error(err);
+//   process.exit(1);
+// }
+
 try {
   await app.listen({
-    port: Number({ host: "0.0.0.0", port: env.PORT }),
+    host: "0.0.0.0",
+    port: env.PORT,
   });
 } catch (err) {
   app.log.error(err);
