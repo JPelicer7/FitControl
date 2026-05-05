@@ -7,7 +7,10 @@ import { env } from "./env.js";
 
 export const auth = betterAuth({
   baseURL: env.API_BASE_URL,
-  trustedOrigins: [env.WEB_APP_BASE_URL, "https://www.fitcontrolapp.com.br"],
+  trustedOrigins: [
+    "https://www.fitcontrolapp.com.br",
+    "https://fitcontrolapp.com.br",
+  ],
   emailAndPassword: {
     enabled: true,
   },
