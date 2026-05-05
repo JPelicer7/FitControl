@@ -103,7 +103,7 @@ await app.register(fastifySwagger, {
 
 //para pegar dados do frontEnd
 await app.register(fastifyCors, {
-  origin: [env.WEB_APP_BASE_URL],
+  origin: [env.WEB_APP_BASE_URL, "https://www.fitcontrolapp.com.br"],
   credentials: true,
 });
 
